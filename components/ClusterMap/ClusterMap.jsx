@@ -1,10 +1,11 @@
+'use client'
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { GoogleMap, useLoadScript, InfoWindow } from "@react-google-maps/api";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { debounce } from "lodash";
 
-const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+const GOOGLE_MAPS_API_KEY = "AIzaSyCSC553l8Isxc4WNFdbiogM-qDCvyMY26c";
 
 const mapContainerStyle = {
   width: "100%",
