@@ -1,11 +1,11 @@
-'use client'
+
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { GoogleMap, useLoadScript, InfoWindow } from "@react-google-maps/api";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { debounce } from "lodash";
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyCSC553l8Isxc4WNFdbiogM-qDCvyMY26c";
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAP_API_KEY;
 
 const mapContainerStyle = {
   width: "100%",
@@ -84,14 +84,14 @@ export default function ClusterMap({ properties, onBoundsChanged }) {
     }
   }, [isLoaded, properties]);
 
-  const navigate = useNavigate();
+  const navigate = useRouter();
 
   const handleMarkerClick = (property) => {
     setSelectedProperty(property);
   };
 
   const handleNavigate = (propertyID) => {
-    navigate(`/property-details/${propertyID}`);
+    navigate.push(`/property-details/${propertyID}`);
   };
 
   // Debounced version of handleBoundsChanged

@@ -4,15 +4,19 @@ import Navbar from "@/components/Navbar/Navbar";
 import Cards from "@/components/Cards/Cards";
 import ClusterMap from "@/components/ClusterMap/ClusterMap";
 import Filters from "@/components/Filters/Filters";
-import {useRouter, usePathname} from "next/navigation";
+import { useRouter } from "next/compat/router";
 import axios from "axios";
 import cities from "@/data-mock/csvjson.json";
 import Footer from "@/components/Footer/Footer";
 import {Provider} from "react-redux";
 import store from "@/app/store"
+import { Params } from "next/dist/server/request/params";
+import { City, Properties, SearchList } from "../type";
+
+
 const BuyPage = () => {
-    const location = usePathname();
-    const property = location.state;
+    const location = useRouter()
+    const property = location?.query;
     const [properties,
         setProperties] = useState([]);
     const [filteredProperties,
@@ -32,7 +36,7 @@ const BuyPage = () => {
     const navigate = useRouter();
 
     const goToPropertyDetails = (_id: any) => {
-        navigate.push(`/property-details/${_id}`);
+        navigate?.push(`/property-details/${_id}`);
     };
 
     const handlePlaceSelect = (data: { lat: React.SetStateAction<number>; lng: React.SetStateAction<number>; }) => {
@@ -41,14 +45,14 @@ const BuyPage = () => {
         handleSubmitClick();
     };
 
-    const handleSubmitClick = useCallback(async(minPrice?: number, maxPrice?: number, minBath?: number, maxBath?: number, minBeds?: number, maxBeds?: number, minSqft?: number, maxSqft?: number, minLot?: number, maxLot?: number, minYearBuilt?: number, maxYearBuilt?: number, statuses?: string) => {
+    const handleSubmitClick = useCallback(async(minPrice?: number, maxPrice?: number, minBath?: number, maxBath?: number, minBeds?: number, maxBeds?: number, minSqft?: number, maxSqft?: number, minLot?: number, maxLot?: number, minYearBuilt?: number, maxYearBuilt?: number, statuses?: string[]) => {
         const buildParams = (params: { [x: string]: any; address?: any; city?: any; minPrice?: number | undefined; maxPrice?: number | undefined; minBaths?: number | undefined; maxBaths?: number | undefined; minBeds?: number | undefined; maxBeds?: number | undefined; minSqft?: number | undefined; maxSqft?: number | undefined; minLotSize?: number | undefined; maxLotSize?: number | undefined; minYearBuilt?: number | undefined; maxYearBuilt?: number | undefined; }) => {
-            let result = {};
-            for (const key in params) {
-                if (params[key] !== null && params[key] !== undefined && params[key] !== "") {
-                    result[key] = params[key];
-                }
-            }
+          let result: Record<string, any> = {};
+          for (const key in params) {
+              if (params[key] !== null && params[key] !== undefined && params[key] !== "") {
+                  result[key] = params[key];
+              }
+          }
             return result;
         };
 
@@ -71,7 +75,7 @@ const BuyPage = () => {
 
         const queryString = Object
             .keys(params)
-            .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+            .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key as keyof typeof params])}`)
             .join("&");
 
         const statusQueryString = statuses && statuses.length > 0
@@ -98,18 +102,18 @@ const BuyPage = () => {
                 return prevProperties;
             })
             if (search && search.length > 0) {
-                const suggestedCities = cities.data
-                    ?.filter((city: { city: string; }) => {
-                        const regex = new RegExp(search, "i");
+                const suggestedCities = (cities as SearchList).data
+                    ?.filter((city) => {
+                        const regex = new RegExp((search as unknown as RegExp), "i");
                         return regex.test(city.city);
                     });
                 setLat(suggestedCities[0].lat || 42.361145);
                 setLng(suggestedCities[0].lng || -71.057083);
             } else {
-                setLat(property
-                    ?.lat);
-                setLng(property
-                    ?.lng);
+                setLat((property
+                  ?.lat as unknown as number));
+                setLng((property
+                    ?.lng as unknown as number));
             }
         } catch (error) {
             console.log(error);
@@ -148,7 +152,7 @@ const BuyPage = () => {
         
         const queryString = Object
             .keys(params)
-            .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+            .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key as keyof typeof params])}`)
             .join("&");
 
         console.log("Fetching properties with params: ", params);
@@ -194,12 +198,15 @@ const BuyPage = () => {
                         <div className="flex-1 overflow-y-auto h-[calc(100vh-150px)]">
                             <div
                                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 sticky overflow-y-auto">
-                                {filteredProperties
-                                    ?.map((property, index) => (
-                                        <div onClick={() => goToPropertyDetails(property._id)} key={index}>
-                                            <Cards {...property}/>
-                                        </div>
-                                    ))}
+                                {(filteredProperties as Properties[])?.map((property, index) => (
+                <div
+                  onClick={() => goToPropertyDetails(property._id)}
+                  key={index}
+                >
+                  <Cards {...property} />
+                </div>
+              ))}
+
                             </div>
                         </div>
                     </div>
