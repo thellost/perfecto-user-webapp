@@ -1,10 +1,11 @@
-import React from "react";
+'use client'
+import React, { FormEvent } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../components/Button/Button";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import Banner from "../../assets/images/hero.jpg";
+import Banner from "@/public/images/hero.jpg";
 
 const Login = () => {
   const {
@@ -13,13 +14,15 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const navigate = useNavigate();
+  const navigate = useRouter();
 
-  const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append("username", data.email);
-    formData.append("password", data.password);
-    formData.append("scope", data.role);
+  const onSubmit = async(event : FormEvent<HTMLFormElement>) => {
+    
+    event.preventDefault()
+
+    
+    const formData = new FormData(event.currentTarget)
+    
     console.log(process.env.REACT_APP_API_URL);
 
     try {
@@ -30,26 +33,20 @@ const Login = () => {
       if (response.status === 200) {
         document.cookie = `access_token=${response.data.access_token}`;
         document.cookie = `token_type=${response.data.token_type}`;
-        navigate("/");
+        navigate.push("/");
         toast.success("Login successful");
       }
     } catch (error) {
       console.log(error);
-      console.log(
-        error.response?.data?.detail || "Something went wrong, try again"
-      );
-      toast.error(
-        error.response?.data?.detail || "Something went wrong, try again"
-      );
+      toast.error("Something went wrong, try again" );
     }
   };
 
-  const imageUrl = "https://via.placeholder.com/150";
 
   return (
     <div className="flex items-center justify-center min-h-screen"
     style={{
-      backgroundImage: `url(${Banner})`,
+      backgroundImage: `url(${Banner.src})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',
@@ -60,7 +57,7 @@ const Login = () => {
     >
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-md rounded-md">
         <h2 className="text-2xl font-bold text-center">Login</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Email
@@ -78,7 +75,7 @@ const Login = () => {
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.email.message}
+                {errors.email.message  as string}
               </p>
             )}
           </div>
@@ -100,7 +97,7 @@ const Login = () => {
             />
             {errors.password && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.password.message}
+                {errors.password.message  as string}
               </p>
             )}
           </div>
@@ -120,12 +117,12 @@ const Login = () => {
               <option value="admin">Admin</option>
             </select>
             {errors.role && (
-              <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
+              <p className="mt-1 text-sm text-red-600">{errors.role.message as string}</p>
             )}
           </div>
 
           <div>
-            <Button className="w-full" variant="blue">
+            <Button className="w-full" variant="blue" placeholder={undefined} onClick={undefined}>
               Login
             </Button>
           </div>
@@ -133,7 +130,7 @@ const Login = () => {
             Don't have an account?{" "}
             <span
               className="text-[#f08e80] font-semibold cursor-pointer"
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate.push("/signup")}
             >
               Signup
             </span>

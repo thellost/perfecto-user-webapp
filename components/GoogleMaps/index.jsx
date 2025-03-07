@@ -5,7 +5,7 @@ import {
   MarkerF,
   InfoWindowF,
 } from "@react-google-maps/api";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 const containerStyle = {
   width: "100%",
@@ -32,7 +32,7 @@ function GoogleMaps({
     googleMapsApiKey: "AIzaSyCSC553l8Isxc4WNFdbiogM-qDCvyMY26c",
   });
 
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const [selectedLocation, setSelectedLocation] = useState(null);
   const mapRef = useRef(null);
 
