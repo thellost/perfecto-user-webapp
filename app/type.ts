@@ -17,6 +17,14 @@ export type City = {
     zips: number | 0,
     id: number | 0
 }
+
+export type User = {
+    name: string,
+    phone: string,
+    email: string,
+    hashed_password?: string,
+    full_adress?:string
+}
 export type SearchList = {
     data: City[]
 }

@@ -1,8 +1,11 @@
+'use server'
+import 'server-only'
+import { cookies } from 'next/headers';
 /**
  * This function is used to get the cookie value by name
  * @param {string} name - cookie name
  */
-export function getCookie(name) {
+export async function getCookie(name:string) {
     let cookieArr = document.cookie.split(";");
 
     for (let i = 0; i < cookieArr.length; i++) {
@@ -14,4 +17,11 @@ export function getCookie(name) {
     }
 
     return null;
+}
+
+
+export async function deleteCookies(name:string){
+    
+    const Cookies = cookies();
+    (await Cookies).delete(name)
 }

@@ -28,8 +28,8 @@ function GoogleMaps({
   initialCenter,
 }) {
   const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: "AIzaSyCSC553l8Isxc4WNFdbiogM-qDCvyMY26c",
+    id: "29165d42d0891f52",
+    googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY,
   });
 
   const navigate = useRouter();

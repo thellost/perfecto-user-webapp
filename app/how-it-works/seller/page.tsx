@@ -15,11 +15,8 @@ import Navbar from "@/components/Navbar/Navbar";
 import Banner from "@/public/images/about.jpeg";
 import Banner2 from "@/public/images/hero.jpg";
 import Footer from "@/components/Footer/Footer";
-import { Provider} from "react-redux";
-import store from "@/app/store"
 function About() {
   return (
-    <Provider store={store}>
     <div className="min-h-screen overflow-x-hidden bg-gray-50">
       <div className="w-full z-10 px-4 border-b bg-white">
         <Navbar searchedValue={undefined} setSearch={undefined} onPlaceSelect={undefined} properties={undefined} setProperties={undefined} />
@@ -214,7 +211,6 @@ function About() {
       </div>
       <Footer />
     </div>
-    </Provider>
   );
 }
 

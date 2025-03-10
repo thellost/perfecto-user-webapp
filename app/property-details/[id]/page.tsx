@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/compat/router";
 import Navbar from "../../../components/Navbar/Navbar";
-import {useSelector, useDispatch} from "react-redux";
+import { useAppSelector, useAppDispatch } from '@/app/hook'
 import Button from "../../../components/Button/Button";
 import {IoMdStar, IoMdStarOutline} from "react-icons/io";
 import {FiShare} from "react-icons/fi";
@@ -20,9 +20,6 @@ import {FaPen} from "react-icons/fa";
 import LoanModal from "../../../components/Modal/LoanModal";
 import Footer from "../../../components/Footer/Footer";
 import 'chart.js/auto';
-
-import { Provider} from "react-redux";
-import store from "@/app/store"
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -42,9 +39,6 @@ const PropertyDetails = () => {
     const id = useRouter()?.query.id;
     const navigate = useRouter();
 
-    const toggleShowMore = () => {
-        setShowMore(!showMore);
-    };
     const [visibleSchools,
         setVisibleSchools] = useState<number>(4);
     const [showMore,
@@ -61,8 +55,9 @@ const PropertyDetails = () => {
         setIsModalOpen] = useState(false);
     const access_token = getCookie("access_token");
 
-    const user = useSelector((state: UserState) => state.user.user);
-    const dispatch = useDispatch();
+    const user = useAppSelector((state) => state.users.user);
+
+    const dispatch = useAppDispatch();
 
     const handleToggleView = () => {
         if (showMore) {
@@ -78,7 +73,7 @@ const PropertyDetails = () => {
     const fetchPropertyDetails = async() => {
         try {
             console.log("fetching...")
-            const url = access_token
+            const url = await access_token
                 ? `${process.env.REACT_APP_API_URL}/auth/property/${_id}`
                 : `${process.env.REACT_APP_API_URL}/property/${_id}`;
 

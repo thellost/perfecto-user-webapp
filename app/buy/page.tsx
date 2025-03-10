@@ -8,9 +8,6 @@ import { useRouter } from "next/compat/router";
 import axios from "axios";
 import cities from "@/data-mock/csvjson.json";
 import Footer from "@/components/Footer/Footer";
-import {Provider} from "react-redux";
-import store from "@/app/store"
-import { Params } from "next/dist/server/request/params";
 import { City, Properties, SearchList } from "../type";
 
 
@@ -168,7 +165,6 @@ const BuyPage = () => {
     };
 
     return (
-        <Provider store={store}>
             <div className="min-h-screen overflow-x-hidden">
                 <div className="w-full z-10 px-4 border-b">
                     <Navbar
@@ -213,7 +209,6 @@ const BuyPage = () => {
                 </div>
                 <Footer/>
             </div>
-        </Provider>
     );
 };
 

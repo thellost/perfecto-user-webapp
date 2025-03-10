@@ -1,14 +1,14 @@
 'use client'
 import React, {useState, useEffect, useCallback} from "react";
-import Navbar from "../components/Navbar/Navbar"
-import Cards from "../components/Cards/Cards";
-import Search from "../components/Search/Search";
+import Navbar from "../../components/Navbar/Navbar"
+import Cards from "../../components/Cards/Cards";
+import Search from "../../components/Search/Search";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useRouter} from 'next/navigation'
 import {faBuilding, faLocation} from "@fortawesome/free-solid-svg-icons";
-import cities from "../data-mock/csvjson.json";
+import cities from "../../data-mock/csvjson.json";
 import Banner from "@/public/images/hero.jpg";
-import Footer from "../components/Footer/Footer";
+import Footer from "../../components/Footer/Footer";
 import build from "next/dist/build";
 import type {City, SearchList, Properties} from "@/app/type"
 const recommendedProperties = [

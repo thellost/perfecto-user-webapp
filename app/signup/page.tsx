@@ -1,12 +1,13 @@
-import React from "react";
+'use client'
+import React, { FormEvent } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Button from "../../components/Button/Button";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useRouter} from "next/navigation";
 import { toast } from "react-toastify";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
-import Banner from "../../assets/images/hero.jpg";
+import Banner from "@/public/images/hero.jpg";
 
 const SignUp = () => {
   const {
@@ -16,18 +17,14 @@ const SignUp = () => {
     formState: { errors },
   } = useForm();
 
-  const navigate = useNavigate();
+  const navigate = useRouter();
 
-  const onSubmit = async (data) => {
-    console.log(data);
-    const payload = {
-      full_name: `${data.firstName} ${data?.lastName}`,
-      email: data.email,
-      password: data.password,
-      role: data.role,
-      phone: data.phone, // Include phone number in the payload
-      referral_code: data.referral,
-    };
+  const onSubmit = async(event : FormEvent<HTMLFormElement>) => {
+      
+    event.preventDefault()
+     
+    const payload = new FormData(event.currentTarget)
+  
     console.log("Payload", payload);
     try {
       const response = await axios.post(
@@ -35,15 +32,12 @@ const SignUp = () => {
         payload
       );
       if (response.status === 200) {
-        navigate("/login");
+        navigate.push("/login");
         toast.success("User registered successfully, Please login to continue");
       }
     } catch (error) {
       console.log(
-        error.response.data.detail || "Something went wrong, try again"
-      );
-      toast.error(
-        error.response.data.detail || "Something went wrong, try again"
+        error
       );
     }
   };
@@ -51,7 +45,7 @@ const SignUp = () => {
   return (
     <div className="flex items-center justify-center min-h-screen"
     style={{
-      backgroundImage: `url(${Banner})`,
+      backgroundImage: `url(${Banner.src})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',
@@ -62,7 +56,7 @@ const SignUp = () => {
     >
       <div className="w-full max-w-md p-8 bg-white shadow-md rounded-md">
         <h2 className="text-2xl font-bold text-center">Sign Up</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4">
 
           <div className="flex space-x-2 mt-2">
             <div>
@@ -82,7 +76,7 @@ const SignUp = () => {
               />
               {errors.firstName && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.firstName.message}
+                  {errors.firstName.message as string}
                 </p>
               )}
             </div>
@@ -104,7 +98,7 @@ const SignUp = () => {
               />
               {errors.lastName && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.lastName.message}
+                  {errors.lastName.message as string}
                 </p>
               )}
             </div>
@@ -131,7 +125,7 @@ const SignUp = () => {
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.email.message}
+                {errors.email.message as string}
               </p>
             )}
           </div>
@@ -178,7 +172,7 @@ const SignUp = () => {
             />
             {errors.password && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.password.message}
+                {errors.password.message as string}
               </p>
             )}
           </div>
@@ -216,12 +210,12 @@ const SignUp = () => {
               <option value="buyer">Buyer</option>
             </select>
             {errors.role && (
-              <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
+              <p className="mt-1 text-sm text-red-600">{errors.role.message as string}</p>
             )}
           </div>
 
           <div>
-            <Button className="w-full" variant="blue">
+            <Button className="w-full" variant="blue" placeholder={undefined} onClick={undefined} >
               Sign Up
             </Button>
           </div>

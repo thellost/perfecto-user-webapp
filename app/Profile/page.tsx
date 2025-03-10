@@ -1,9 +1,9 @@
 import React from "react";
 import Navbar from "../../components/Navbar/Navbar";
-import { useSelector } from "react-redux";
+import { useAppSelector} from '@/app/hook'
 import { toast } from "react-toastify";
 import Footer from "../../components/Footer/Footer";
-
+import { userSlice } from "@/feature/user/userSlice";
 const Profile = () => {
     const handleCopy = () => {
         navigator.clipboard.writeText(user?.referral_code).then(() => {
@@ -13,13 +13,13 @@ const Profile = () => {
         });
     };
 
-    const user = useSelector((state) => state.user.user);
+    const user = useAppSelector((state) => state.users.user);
     console.log(user);
 
     return (
         <div className="min-h-screen overflow-x-hidden bg-gray-100">
             <div className="w-full z-10 px-4 border-b bg-white shadow-sm">
-                <Navbar />
+                <Navbar searchedValue={undefined} setSearch={undefined} onPlaceSelect={undefined} properties={undefined} setProperties={undefined} />
             </div>
             <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
                 <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">User Profile</h2>

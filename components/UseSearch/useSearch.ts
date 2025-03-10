@@ -1,16 +1,27 @@
 'use client'
 import { useState, useEffect, useCallback } from "react";
 import cities from "../../data-mock/csvjson.json";
+import { City, Properties, SearchList } from "@/app/type";
 
-const useSearch = ({searchedValue, properties}) => {
+interface props {
+  searchedValue: string,
+  properties: Properties[]
+}
+
+interface buildings {
+  id: string,
+  name: string,
+  state: string,
+}
+const useSearch = ({searchedValue, properties}: props) => {
   const [suggestions, setSuggestions] = useState([]);
   const [value, setValue] = useState(searchedValue);
-  const [places, setPlaces] = useState([]);
-  const [buildings, setBuildings] = useState([]);
+  const [places, setPlaces] = useState<City[]>([]);
+  const [buildings, setBuildings] = useState<buildings[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [updatedProperties, setUpdatedProperties] = useState(properties)
 
-  const fetchSuggestions = async (searchValue) => {
+  const fetchSuggestions = async (searchValue: string | RegExp) => {
     setIsLoading(true);
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/search?address=${searchValue}`);
@@ -23,14 +34,14 @@ const useSearch = ({searchedValue, properties}) => {
         return prevProperties;
       });
 
-      const suggestedCities = cities.data?.filter((city) => {
+      const suggestedCities = (cities as SearchList).data?.filter((city) => {
         const regex = new RegExp(searchValue, "i");
         return regex.test(city.city);
       }).slice(0, 5);
 
       setPlaces(suggestedCities);
       setBuildings(() =>
-        responseData.map((res) => ({
+        responseData.map((res: { _id: string; name: string; state: string; }) => ({
           id: res._id,
           name: res.name,
           state: res.state,
@@ -43,10 +54,11 @@ const useSearch = ({searchedValue, properties}) => {
     }
   };
 
-  const debounce = (func, delay) => {
-    let debounceTimer;
-    return function (...args) {
-      const context = this;
+  const debounce = (func: { (searchValue: string | RegExp): Promise<void>; }, delay: number | undefined) => {
+    let debounceTimer: string | number | NodeJS.Timeout | undefined;
+    return function (...args: any) {
+      //this can cause problems
+      const context = debounce;
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => func.apply(context, args), delay);
     };

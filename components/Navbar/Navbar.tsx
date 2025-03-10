@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import {
   FaBars,
@@ -7,33 +8,44 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 import { usePathname, useRouter } from "next/navigation";
+import { } from "next/compat/router";
 import useSearch from "../UseSearch/useSearch";
-import { useSelector, useDispatch } from "react-redux";
+import { useAppSelector, useAppDispatch } from "@/app/hook";
 import { setUser } from "../../feature/user/userSlice";
 import axios from "axios";
 import AddressModal from "../Modal/AddressModal";
-import { getCookie } from "../../utils/helper";
+import { getCookie, deleteCookies } from "../../utils/helper";
 import Logo from "../../public/images/LogoNobg.png";
-import Cookies from "js-cookie";
+import { City } from "@/app/type";
 
-const Navbar = ({
-  searchedValue,
+interface props {
+  searchedValue: any,
+  setSearch?: (arg0: any) => void,
+  onPlaceSelect?: (arg0: any) => void,
+  properties?: any,
+  setProperties?: (arg0: any) => void,
+}
+
+
+const Navbar =(
+  {searchedValue,
   setSearch,
   onPlaceSelect,
   properties,
-  setProperties,
-}) => {
+  setProperties} : props
+) => {
   const location = usePathname();
   const navigate = useRouter();
   const isHome = location === '/';
   
+
   const isListAddress = location === `/list-address`;
   const isProfile = location === `/profile`;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isValueChanging, setIsValueChanging] = useState(false);
 
-  const user = useSelector((state) => state.user.user);
-  const dispatch = useDispatch();
+  const user =  useAppSelector((state) => state.users.user);
+  const dispatch = useAppDispatch();
 
   const { value, setValue, places, buildings, isLoading, updatedProperties } =
     useSearch({ searchedValue, properties });
@@ -57,43 +69,44 @@ const Navbar = ({
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handlePlaceClick = (data) => {
+  const handlePlaceClick = (data: City) => {
     // setValue("");
-    Router.pus(`/buy`, {
-      state: data,
-    });
+    navigate?.push("/buy");
     if (setSearch) setSearch(value);
-    setProperties(updatedProperties);
-    onPlaceSelect(data);
+    setProperties?.(updatedProperties);
+    onPlaceSelect?.(data);
     setIsValueChanging(false);
   };
 
-  const goToPropertyDetails = (propertyId) => {
-    router.push(`/property-details/${propertyId}`);
+  const goToPropertyDetails = (propertyId: any) => {
+    navigate?.push(`/property-details/${propertyId}`);
   };
 
-  const onSearch = (data) => {
+  const onSearch = (data: any) => {
     setIsValueChanging(false);
     if (setSearch) setSearch(value);
-    onPlaceSelect(data);
+    onPlaceSelect?.(data);
   };
 
-  const handleSearchInputChange = (e) => {
+  const handleSearchInputChange = (e: { preventDefault: () => void; target: { value: any; }; }) => {
     e.preventDefault();
     setValue(e.target.value);
     setIsValueChanging(true);
   };
 
-  const handleLogout = () => {
-    // Remove cookies
-    Cookies.remove("access_token", { path: "/" });
-    Cookies.remove("token_type", { path: "/" });
+  const handleLogout = async () => {
+    /*Remove cookies
+    (await Cookies).delete("access_token");
+    (await Cookies).delete("token_type");
+    */
 
+    deleteCookies("access_token");
+    deleteCookies("token_type");
     // Clear user state
     dispatch(setUser({ email: "", full_name: "", role: "" }));
 
     // Navigate to login or homepage
-    navigate.push("/login");
+    navigate?.push("/login");
   };
 
   useEffect(() => {
@@ -124,8 +137,8 @@ const Navbar = ({
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleOptionClick = (path) => {
-    navigate.push(path);
+  const handleOptionClick = (path: string) => {
+    navigate?.push(path);
     setIsDropdownOpen(false);
   };
 
@@ -142,7 +155,7 @@ const Navbar = ({
               className={`text-[28px] font-semibold flex items-center cursor-pointer ${
                 isListAddress || isProfile ? "text-black" : "text-white"
               }`}
-              onClick={() => navigate.push("/")}
+              onClick={() => navigate?.push("/")}
             >
               <div className="flex items-center cursor-pointer">
                 <img src={Logo.src} alt="Logo" className="h-16 w-auto mr-2" />
@@ -153,7 +166,7 @@ const Navbar = ({
             <div className="flex gap-8">
               <h3
                 className="text-[28px] hidden sm:block font-semibold text-black"
-                onClick={() => navigate.push("/")}
+                onClick={() => navigate?.push("/")}
               >
                 <div className="flex items-center cursor-pointer">
                   <img src={Logo.src} alt="Logo" className="h-16 w-auto mr-2" />
@@ -229,7 +242,7 @@ const Navbar = ({
               ? "text-white hover:bg-[white] p-2 rounded-md"
               : "text-black my-auto"
           }`}
-          onClick={() => navigate.push("/about")}
+          onClick={() => navigate?.push("/about")}
         >
           About
         </a>
@@ -239,7 +252,7 @@ const Navbar = ({
               ? "text-white hover:bg-[white] p-2 rounded-md"
               : "text-black my-auto"
           }`}
-          onClick={() => navigate.push("/buy")}
+          onClick={() => navigate?.push("/buy")}
         >
           Buy
         </a>
@@ -284,7 +297,7 @@ const Navbar = ({
               ? "text-white hover:bg-[white] p-2 rounded-md"
               : "text-black my-auto"
           }`}
-          onClick={() => navigate.push("/wishlist")}
+          onClick={() => navigate?.push("/wishlist")}
         >
           My Wishlist
         </a>
@@ -294,7 +307,7 @@ const Navbar = ({
               className={`text-[16px] font-semibold cursor-pointer ${
                 isHome ? "text-white p-2" : "text-black my-auto"
               }`}
-              onClick={() => navigate.push("/profile")}
+              onClick={() => navigate?.push("/profile")}
             >
               Welcome, {user?.full_name.split(" ")[0]}
             </span>
@@ -318,7 +331,7 @@ const Navbar = ({
                   ? "text-white hover:bg-[white] p-2 rounded-md"
                   : "text-black my-auto"
               }`}
-              onClick={() => navigate("/login")}
+              onClick={() => navigate?.push("/login")}
             >
               {" "}
               Login{" "}
@@ -330,7 +343,7 @@ const Navbar = ({
                   ? "text-white hover:bg-[white] p-2 rounded-md"
                   : "text-black my-auto"
               }`}
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate?.push("/signup")}
             >
               {" "}
               Signup{" "}
@@ -352,7 +365,7 @@ const Navbar = ({
             className={`hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer ${
               isHome ? "text-white hover:bg-[white] p-2" : "text-black my-auto"
             }`}
-            onClick={() => navigate("/list-address")}
+            onClick={() => navigate?.push("/list-address")}
           >
             {" "}
             List Address
@@ -376,10 +389,10 @@ const Navbar = ({
         <div className="p-4 flex justify-between items-center">
           <div className="cursor-pointer">
             <div className="flex items-center cursor-pointer">
-              <img src={Logo} alt="Logo" className="h-16 w-auto mr-2" />
+              <img src={Logo.src} alt="Logo" className="h-16 w-auto mr-2" />
               <h3
                 className="sm:text-[14px] block font-semibold text-black"
-                onClick={() => navigate("/")}
+                onClick={() => navigate?.push("/")}
               >
                 PERFECTO
               </h3>
@@ -396,20 +409,20 @@ const Navbar = ({
           {user?.full_name && (
             <span
               className={`text-[16px] font-semibold text-black my-auto cursor-pointer`}
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate?.push("/profile")}
             >
               Welcome, {user?.full_name.split(" ")[0]}
             </span>
           )}
           <a
             className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"
-            onClick={() => navigate("/about")}
+            onClick={() => navigate?.push("/about")}
           >
             About
           </a>
           <a
             className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"
-            onClick={() => navigate("/buy")}
+            onClick={() => navigate?.push("/buy")}
           >
             Buy
           </a>
@@ -426,7 +439,7 @@ const Navbar = ({
                   className="block px-4 py-2 hover:bg-gray-200 cursor-pointer"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    navigate("/how-it-works/seller");
+                    navigate?.push("/how-it-works/seller");
                   }}
                 >
                   For Seller
@@ -435,7 +448,7 @@ const Navbar = ({
                   className="block px-4 py-2 hover:bg-gray-200 cursor-pointer"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    navigate("/how-it-works/agent");
+                    navigate?.push("/how-it-works/agent");
                   }}
                 >
                   For Agent
@@ -444,7 +457,7 @@ const Navbar = ({
                   className="block px-4 py-2 hover:bg-gray-200 cursor-pointer"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    navigate("/how-it-works/buyer");
+                    navigate?.push("/how-it-works/buyer");
                   }}
                 >
                   For Buyer
@@ -455,7 +468,7 @@ const Navbar = ({
           <a
             target="_blank"
             className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"
-            onClick={() => navigate("/wishlist")}
+            onClick={() => navigate?.push("/wishlist")}
           >
             My Wishlist
           </a>
@@ -471,14 +484,14 @@ const Navbar = ({
             <>
               <p
                 className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"
-                onClick={() => navigate("/login")}
+                onClick={() => navigate?.push("/login")}
               >
                 {" "}
                 Login{" "}
               </p>
               <p
                 className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"
-                onClick={() => navigate("/signup")}
+                onClick={() => navigate?.push("/signup")}
               >
                 {" "}
                 Signup{" "}
@@ -497,7 +510,7 @@ const Navbar = ({
           {user.role === "admin" && (
             <p
               className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"
-              onClick={() => navigate("/list-address")}
+              onClick={() => navigate?.push("/list-address")}
             >
               {" "}
               List Address
