@@ -6,6 +6,9 @@ import { cookies } from 'next/headers';
  * @param {string} name - cookie name
  */
 export async function getCookie(name:string) {
+    try {
+
+ 
     let cookieArr = document.cookie.split(";");
 
     for (let i = 0; i < cookieArr.length; i++) {
@@ -15,8 +18,12 @@ export async function getCookie(name:string) {
             return decodeURIComponent(cookiePair[1]);
         }
     }
+    }
+    catch {
 
-    return null;
+        return null;
+    }
+
 }
 
 

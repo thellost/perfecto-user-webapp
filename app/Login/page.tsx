@@ -6,6 +6,10 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Banner from "@/public/images/hero.jpg";
+import { getSession, signIn } from "next-auth/react"
+import { useAppSelector, useAppDispatch } from "@/app/hook";
+import { setUser } from "@/feature/user/userSlice";
+
 
 const Login = () => {
   const {
@@ -22,23 +26,41 @@ const Login = () => {
 
     
     const formData = new FormData(event.currentTarget)
-    
-    console.log(process.env.REACT_APP_API_URL);
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/token`,
-        formData
-      );
-      if (response.status === 200) {
-        document.cookie = `access_token=${response.data.access_token}`;
-        document.cookie = `token_type=${response.data.token_type}`;
+        const response = await signIn("credentials", {
+          email: formData.get("email"),
+          password: formData.get("password"),
+          role: formData.get("role"),
+          redirect: false,
+        });
+        
+        if (!response?.ok) {
+          throw Error((response?.error as string))
+        }
+        
+        
+       
+        const session = await getSession()
+        let data = null;
+        if (session != null){
+          data =  await axios.post(
+            `${process.env.NEXT_PUBLIC_REACT_APP_API_URL}/api/crud/getUser`,
+            formData
+          ).catch(function (error) {
+            throw new Error(error.response.data.error)
+          });
+          
+        }
+        console.log(data)
+        const dispatch = useAppDispatch();
+        dispatch(setUser({ email: "", full_name: "", role: "" }));
         navigate.push("/");
         toast.success("Login successful");
-      }
+      
     } catch (error) {
       console.log(error);
-      toast.error("Something went wrong, try again" );
+      toast.error((error as Error).message);
     }
   };
 
@@ -64,6 +86,7 @@ const Login = () => {
             </label>
             <input
               type="email"
+              id="email"
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -86,6 +109,7 @@ const Login = () => {
             </label>
             <input
               type="password"
+              id="password"
               {...register("password", {
                 required: "Password is required",
                 minLength: {
@@ -107,6 +131,7 @@ const Login = () => {
               Role
             </label>
             <select
+              id="role"
               {...register("role", { required: "Role is required" })}
               className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >

@@ -1,8 +1,16 @@
+
 import type {NextAuthOptions}from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-export const options : NextAuthOptions = {
+import { DynamoDBAdapter } from "@auth/dynamodb-adapter"
+import { client } from "../../crud/db"
+
+import { validate_user } from "../../crud/db";
+import bcrypt from 'bcrypt';
+import { userAgent } from "next/server";
+
+export const authOptions : NextAuthOptions = {
     pages:{
         signIn: "/login"
     },
@@ -20,6 +28,10 @@ export const options : NextAuthOptions = {
                 password: {
                     label: "Password",
                     type: "password"
+                },
+                role: {
+                    label: "Roles",
+                    type: "text"
                 }
 
             },
@@ -29,30 +41,27 @@ export const options : NextAuthOptions = {
                 // if the credentials are invalid. e.g. return { id: 1, name: 'J Smith', email:
                 // 'jsmith@example.com' } You can also use the `req` object to obtain
                 // additional parameters (i.e., the request IP address)
-                const res = await fetch("/your/endpoint", {
-                    method: 'POST',
-                    body: JSON.stringify(credentials),
-                    headers: {
-                        "Content-Type": "application/json"
+                try {
+                    const user = await validate_user(credentials?.email , credentials?.role)
+                    const passwordMatches = await bcrypt.compare((credentials?.password as string), user.hashed_password)
+                    // If no error and we have user data, return it
+                    if (credentials
+                        ?.email == user.email && passwordMatches) {
+                            console.log(user)
+                        return user
+                    } else {
+                        return null
                     }
-                })
-                const user = {
-                    id: "42",
-                    username: "zidan",
-                    password: "123456",
-                    email: "aldy10ball@gmail.com"
-                }
+                    } catch (e) {
+                        return null
+                    }
 
-                // If no error and we have user data, return it
-                if (credentials
-                    ?.email == user.email && credentials.password == user.password) {
-                    return user
-                } else {
-                    return null
-                }
                 // Return null if user data could not be retrieved
 
-            }
+            },
+
+            
         })
     ],
 }
+

@@ -6,7 +6,7 @@ import { getCookie } from '../../utils/helper';
 
 export default function AddressModal({ isOpen, closeModal }) {
     const [addresses, setAddresses] = useState(['']);
-    const access_token = getCookie('access_token');
+    const access_token = null;
 
     const addAddressField = () => {
         setAddresses([...addresses, '']);
@@ -83,7 +83,7 @@ export default function AddressModal({ isOpen, closeModal }) {
                         children="Add Another Address"
                         className="border border-purple-400"
                         variant="white"
-                        onClick={addAddressField}
+                        onClick={() => addAddressField()}
                     />
                     <div className="flex space-x-2">
                         <Button

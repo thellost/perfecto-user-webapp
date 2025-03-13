@@ -17,28 +17,27 @@ const SignUp = () => {
     formState: { errors },
   } = useForm();
 
+
   const navigate = useRouter();
 
   const onSubmit = async(event : FormEvent<HTMLFormElement>) => {
       
     event.preventDefault()
-     
     const payload = new FormData(event.currentTarget)
-  
-    console.log("Payload", payload);
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/signup`,
+        `${process.env.NEXT_PUBLIC_REACT_APP_API_URL}/api/crud/createUser`,
         payload
-      );
-      if (response.status === 200) {
+      ).catch(function (error) {
+        throw new Error(error.response.data.error)
+      });
+
+      if (response?.status === 200) {
         navigate.push("/login");
         toast.success("User registered successfully, Please login to continue");
-      }
+      } 
     } catch (error) {
-      console.log(
-        error
-      );
+      toast.error( (error as Error).message)
     }
   };
 
@@ -73,6 +72,7 @@ const SignUp = () => {
                   required: "First Name is required",
                 })}
                 className="w-full px-3 py-2 border rounded-md"
+                required
               />
               {errors.firstName && (
                 <p className="mt-1 text-sm text-red-600">
@@ -112,6 +112,7 @@ const SignUp = () => {
               Email
             </label>
             <input
+            required
               type="email"
               id="email"
               {...register("email", {
@@ -138,12 +139,14 @@ const SignUp = () => {
               Phone Number
             </label>
             <Controller
+            
               name="phone"
               control={control}
               render={({ field }) => (
                 <PhoneInput
                   defaultCountry="US"
                   {...field}
+                  required
                   id="phone"
                   className="w-full px-3 py-2 border rounded-md"
                 />
@@ -161,6 +164,7 @@ const SignUp = () => {
             <input
               type="password"
               id="password"
+              required
               {...register("password", {
                 required: "Password is required",
                 minLength: {
@@ -201,6 +205,7 @@ const SignUp = () => {
             </label>
             <select
               id="role"
+              required
               {...register("role", { required: "Role is required" })}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
