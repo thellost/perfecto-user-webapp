@@ -40,10 +40,8 @@ const Home = () => {
     const { data: session } = useSession({
         required: true,
         onUnauthenticated() {
-            redirect('/api/auth/signin?callbackUrl=/client')
-        }
+        },
     })
-    console.log(session)
     const [value,
         setValue] = useState < string > ("");
     const [places,

@@ -11,7 +11,7 @@ import { useAppSelector, useAppDispatch } from "@/app/hook";
 import { setUser } from "@/feature/user/userSlice";
 
 
-const Login = () => {
+function Login()  {
   const {
     register,
     handleSubmit,
@@ -20,6 +20,7 @@ const Login = () => {
 
   const navigate = useRouter();
 
+  const dispatch = useAppDispatch();
   const onSubmit = async(event : FormEvent<HTMLFormElement>) => {
     
     event.preventDefault()
@@ -53,8 +54,7 @@ const Login = () => {
           
         }
         console.log(data)
-        const dispatch = useAppDispatch();
-        dispatch(setUser({ email: "", full_name: "", role: "" }));
+        dispatch(setUser({ email: data?.data.email, full_name: data?.data.name, role: data?.data.roles }));
         navigate.push("/");
         toast.success("Login successful");
       

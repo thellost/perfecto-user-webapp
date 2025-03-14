@@ -41,6 +41,7 @@ const Navbar = (
  const { data: session } = useSession({
         required: true,
         onUnauthenticated() {
+          
         },
     })
 
@@ -56,6 +57,7 @@ const Navbar = (
   const [isValueChanging, setIsValueChanging] = useState(false);
 
   const user =  useAppSelector((state) => state.users.user);
+  console.log(user)
   const dispatch = useAppDispatch();
   const { value, setValue, places, buildings, isLoading, updatedProperties } =
     useSearch({ searchedValue, properties });
@@ -112,35 +114,12 @@ const Navbar = (
     deleteCookies("token_type");
     // Clear user state
 
-    dispatch(setUser({ email: "", full_name: "", role: "" }));
+    //dispatch(setUser({ email: "", full_name: "", role: "" }));
 
     // Navigate to login or homepage
     navigate?.push("/login");
   };
 
-  useEffect(() => {
-    const access_token = getCookie("access_token");
-    const fetchUserDetails = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/users/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${access_token}`,
-            },
-          }
-        );
-        if (response.status === 200) {
-          console.log(response.data);
-          dispatch(setUser(response.data));
-        }
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    };
-    fetchUserDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -249,7 +228,7 @@ const Navbar = (
 
       <div className="hidden md:flex space-x-4">
         <a
-        href="/about"
+        href="/"
           className={`hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer ${
             isHome
               ? "text-white hover:bg-[white] p-2 rounded-md"

@@ -34,8 +34,8 @@ export async function validate_user(email? : string, roles?: string) {
         const response = await client.send(new GetCommand({
             TableName: 'users',
             Key: {
-                email: email,
-                roles: roles
+                email: email.toLowerCase(),
+                roles: roles.toLowerCase()
             }
         }));
         const item = response.Item
