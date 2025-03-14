@@ -8,7 +8,7 @@ import { useRouter } from "next/compat/router";
 import axios from "axios";
 import cities from "@/data-mock/csvjson.json";
 import Footer from "@/components/Footer/Footer";
-import { City, Properties, SearchList } from "../type";
+import { City, Properties, SearchList } from "../types/DefaultType";
 
 
 const BuyPage = () => {

@@ -16,9 +16,9 @@ import axios from "axios";
 import AddressModal from "../Modal/AddressModal";
 import { getCookie, deleteCookies } from "../../utils/helper";
 import Logo from "../../public/images/LogoNobg.png";
-import { City } from "@/app/type";
+import { City } from "@/app/types/DefaultType";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 interface props {
   searchedValue: any,
@@ -56,7 +56,7 @@ const Navbar = (
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isValueChanging, setIsValueChanging] = useState(false);
 
-  const user =  useAppSelector((state) => state.users.user);
+  const user =  session 
   console.log(user)
   const dispatch = useAppDispatch();
   const { value, setValue, places, buildings, isLoading, updatedProperties } =
@@ -110,14 +110,13 @@ const Navbar = (
     (await Cookies).delete("token_type");
     */
 
-    deleteCookies("access_token");
-    deleteCookies("token_type");
+    signOut();
     // Clear user state
-
+    
     //dispatch(setUser({ email: "", full_name: "", role: "" }));
 
     // Navigate to login or homepage
-    navigate?.push("/login");
+    navigate?.push("/");
   };
 
 
@@ -292,7 +291,7 @@ const Navbar = (
         >
           My Wishlist
         </a>
-        {user?.full_name ? (
+        {user?.user?.name ? (
           <>
           <Link href="/profile">
             <span
@@ -300,7 +299,7 @@ const Navbar = (
                 isHome ? "text-white p-2" : "text-black my-auto"
               }`}
             >
-              Welcome, {user?.full_name.split(" ")[0]}
+              Welcome, {user?.user?.name.split(" ")[0]}
             </span>
             </Link>
             <p
@@ -344,7 +343,7 @@ const Navbar = (
             </Link>
           </>
         )}
-        {(user?.role === "agent" || user?.role === "seller") && (
+        {(user?.roles === "agent" || user?.roles === "seller") && (
           <p
             className={`hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer ${
               isHome ? "text-white hover:bg-[white] p-2" : "text-black my-auto"
@@ -354,7 +353,7 @@ const Navbar = (
             Submit Address
           </p>
         )}
-        {user?.role === "admin" && (
+        {user?.roles === "admin" && (
           <Link href="/list-address">
           <p
             className={`hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer ${
@@ -402,12 +401,12 @@ const Navbar = (
           </button>
         </div>
         <div className="flex flex-col space-y-4 p-4">
-          {user?.full_name && (
+          {user?.user?.name && (
             <Link href="/profile">
             <span
               className={`text-[16px] font-semibold text-black my-auto cursor-pointer`}
             >
-              Welcome, {user?.full_name.split(" ")[0]}
+              Welcome, {user?.user?.name.split(" ")[0]}
             </span>
             </Link>
           )}
@@ -469,7 +468,7 @@ const Navbar = (
           >
             My Wishlist
           </a>
-          {user?.full_name ? (
+          {user?.user?.name ? (
             <p
               className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"
               onClick={handleLogout}
@@ -498,7 +497,7 @@ const Navbar = (
               </Link>
             </>
           )}
-          {user?.role === "agent" && (
+          {user?.roles === "agent" && (
             <p
               className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"
               onClick={openModal}
@@ -507,7 +506,7 @@ const Navbar = (
               Submit Address{" "}
             </p>
           )}
-          {user.role === "admin" && (
+          {user?.roles === "admin" && (
             <Link href="/list-address">
             <p
               className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"

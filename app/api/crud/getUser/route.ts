@@ -15,8 +15,6 @@ export async function POST(
     const roles = raw_json.get("role")?.toString() ?? ""
     
       const user = await validate_user(email, roles)
-      console.log("AAAAAAAAAAAAA")
-      console.log(user)
       return  NextResponse.json(user,{status:200})
     } catch (err) {
         console.log((err as Error).message)

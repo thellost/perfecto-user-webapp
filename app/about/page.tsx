@@ -10,7 +10,7 @@ import cities from "../../data-mock/csvjson.json";
 import Banner from "@/public/images/hero.jpg";
 import Footer from "../../components/Footer/Footer";
 import build from "next/dist/build";
-import type {City, SearchList, Properties} from "@/app/type"
+import type {City, SearchList, Properties} from "@/app/types/DefaultType"
 const recommendedProperties = [
     {
         "id": 2,

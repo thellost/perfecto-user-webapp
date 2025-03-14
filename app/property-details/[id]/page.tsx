@@ -30,7 +30,7 @@ import {
     Legend
 } from "chart.js";
 import {Bar} from "react-chartjs-2";
-import {Properties, UserState} from "@/app/type";
+import {Properties, UserState} from "@/app/types/DefaultType";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 

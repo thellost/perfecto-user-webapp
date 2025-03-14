@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useCallback } from "react";
 import cities from "../../data-mock/csvjson.json";
-import { City, Properties, SearchList } from "@/app/type";
+import { City, Properties, SearchList } from "@/app/types/DefaultType";
 
 interface props {
   searchedValue: string,

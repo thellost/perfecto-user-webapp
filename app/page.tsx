@@ -9,7 +9,7 @@ import cities from "../data-mock/csvjson.json";
 import Banner from "@/public/images/hero.jpg";
 import Footer from "../components/Footer/Footer";
 import type {City, SearchList, Properties}
-from "@/app/type"
+from "@/app/types/DefaultType"
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
@@ -42,6 +42,7 @@ const Home = () => {
         onUnauthenticated() {
         },
     })
+    console.log(session)
     const [value,
         setValue] = useState < string > ("");
     const [places,

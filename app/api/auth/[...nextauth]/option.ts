@@ -5,7 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 import { DynamoDBAdapter } from "@auth/dynamodb-adapter"
 import { client } from "../../crud/db"
-
+import { User } from "@/app/types/DefaultType";
 import { validate_user } from "../../crud/db";
 import bcrypt from 'bcrypt';
 import { userAgent } from "next/server";
@@ -55,13 +55,26 @@ export const authOptions : NextAuthOptions = {
                     } catch (e) {
                         return null
                     }
-
+                
                 // Return null if user data could not be retrieved
 
             },
+            
 
             
         })
     ],
+    callbacks: {
+        //  The extended shape of session is defined in @types/next-auth.d.ts
+        async session({ session }) {
+            if (session.user === undefined || session.user === null || session.user.email === null || session.user.email === undefined){
+                return session
+            }
+            const user: User = await validate_user(session.user?.email);
+            session.roles = user.roles ?? "buyer";
+            session.phone_number = user?.phone_number ?? "";
+            return session
+        },
+    }
 }
 

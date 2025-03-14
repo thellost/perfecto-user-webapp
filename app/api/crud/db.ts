@@ -1,15 +1,7 @@
+import { User } from "@/app/types/DefaultType"
 import {DynamoDB, DynamoDBClientConfig} from "@aws-sdk/client-dynamodb"
-import {DynamoDBDocument, GetCommand, PutCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb"
+import {DynamoDBDocument, GetCommand, GetCommandOutput, PutCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb"
 import bcrypt from "bcrypt"
-export type User = {
-    name?: string,
-    phone?: string,
-    email: string,
-    roles: string,
-    hashed_password: string,
-    full_address?: string,
-    referral?: string
-}
 
 const adaptor_config : DynamoDBClientConfig = {
     credentials: {
@@ -31,8 +23,8 @@ export async function createNewUser(user : User) {
     try {
     const name = user?.name ?? "";
     const email = user.email.toLowerCase();
-    const phone = user
-        ?.phone ?? ""
+    const phone_number = user
+        ?.phone_number ?? ""
     const hashed_password = await bcrypt.hash(user.hashed_password,12) ?? ""
     const full_address = user
         ?.full_address ?? ""
@@ -55,7 +47,7 @@ export async function createNewUser(user : User) {
         Item: {
             name:  name,
             email: email,
-            phone: phone,
+            phone_number: phone_number,
             hashed_password: hashed_password,
             full_address: full_address,
             roles: roles,
@@ -73,17 +65,29 @@ export async function createNewUser(user : User) {
 
 export async function validate_user(email? : string, roles?: string) {
 
-    if (email == undefined || roles == undefined){
+    if (email == undefined){
         return Error("Wrong Credentials")
     }
     try {
-        const response = await client.send(new GetCommand({
-            TableName: 'users',
-            Key: {
-                email: email.toLowerCase(),
-                roles: roles.toLowerCase()
-            }
-        }));
+        let response: GetCommandOutput;
+        if(roles == undefined || roles == null){
+            response = await client.send(new GetCommand({
+                TableName: 'users',
+                Key: {
+                    email: email.toLowerCase()
+                }
+            }));
+        }
+        else {
+            response = await client.send(new GetCommand({
+                TableName: 'users',
+                Key: {
+                    email: email.toLowerCase(),
+                    roles: roles.toLowerCase()
+                }
+            }));
+        }
+        
         const item = response.Item
         if (item === undefined) {
             throw new Error("Wrong Credentials")
