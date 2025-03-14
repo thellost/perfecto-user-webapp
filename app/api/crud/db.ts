@@ -18,7 +18,7 @@ export const client = DynamoDBDocument.from(new DynamoDB(adaptor_config), {
     }
 })
 
-export async function createNewUser(user : User) {
+export async function createNewUser(user : User, referral?: string) {
     
     try {
     const name = user?.name ?? "";
@@ -30,7 +30,8 @@ export async function createNewUser(user : User) {
         ?.full_address ?? ""
     const roles = user
         ?.roles ?? "buyer"
-    const referral = user?.referral ?? ""
+    const referral_code = user?.referral_code ?? ""
+    const referred_by = referral ?? ""
 
     const user_check = await client.send(new GetCommand({
         TableName: 'users',
@@ -51,7 +52,8 @@ export async function createNewUser(user : User) {
             hashed_password: hashed_password,
             full_address: full_address,
             roles: roles,
-            referral: referral // no books for new user, an empty object
+            referral_code:  referral_code,
+            referred_by: referred_by,// no books for new user, an empty object
         },
         // ReturnValues: 'ALL_OLD',
     })

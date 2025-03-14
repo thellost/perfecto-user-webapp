@@ -4,17 +4,17 @@ import {error} from "console"
 import { NextApiRequest, NextApiResponse } from "next"
 import {client, validate_user} from "../db"
 import { NextResponse } from "next/server"
-
+import { getServerSession } from "next-auth"
+import { authOptions } from "../../auth/[...nextauth]/option"
 export async function POST(
-    req: Request,
+    req: Request
     
   ) {
+
     try {
     const raw_json = await req.formData()
     const email = raw_json.get("email")?.toString() ?? ""
-    const roles = raw_json.get("role")?.toString() ?? ""
-    
-      const user = await validate_user(email, roles)
+      const user = await validate_user(email)
       return  NextResponse.json(user,{status:200})
     } catch (err) {
         console.log((err as Error).message)

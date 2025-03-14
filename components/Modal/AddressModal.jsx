@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Button from '../Button/Button';
 import axios from 'axios';
-import { getCookie } from '../../utils/helper';
+import { getCookie } from '../../utils/helper_async';
 
 export default function AddressModal({ isOpen, closeModal }) {
     const [addresses, setAddresses] = useState(['']);

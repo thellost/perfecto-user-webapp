@@ -42,7 +42,7 @@ export const authOptions : NextAuthOptions = {
                 // 'jsmith@example.com' } You can also use the `req` object to obtain
                 // additional parameters (i.e., the request IP address)
                 try {
-                    const user = await validate_user(credentials?.email , credentials?.role)
+                    const user = await validate_user(credentials?.email)
                     const passwordMatches = await bcrypt.compare((credentials?.password as string), user.hashed_password)
                     // If no error and we have user data, return it
                     if (credentials
@@ -71,8 +71,10 @@ export const authOptions : NextAuthOptions = {
                 return session
             }
             const user: User = await validate_user(session.user?.email);
+            console.log(user)
             session.roles = user.roles ?? "buyer";
             session.phone_number = user?.phone_number ?? "";
+            session.referral_code= user?.referral_code ?? "";
             return session
         },
     }

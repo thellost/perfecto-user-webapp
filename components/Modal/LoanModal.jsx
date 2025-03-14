@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Button from "../Button/Button";
-import { getCookie } from "../../utils/helper";
+import { getCookie } from "../../utils/helper_async";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

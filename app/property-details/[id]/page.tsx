@@ -15,7 +15,7 @@ import GoogleMaps from "../../../components/GoogleMaps";
 import CustomLoader from "../../../components/CustomLoader/CustomLoader";
 import {ToastContainer, toast} from "react-toastify";
 import axios, { AxiosError } from "axios";
-import {getCookie} from "../../../utils/helper";
+import {getCookie} from "../../../utils/helper_async";
 import {FaPen} from "react-icons/fa";
 import LoanModal from "../../../components/Modal/LoanModal";
 import Footer from "../../../components/Footer/Footer";

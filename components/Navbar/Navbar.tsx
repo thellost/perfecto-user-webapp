@@ -14,7 +14,7 @@ import { useAppSelector, useAppDispatch } from "@/app/hook";
 import { setUser } from "../../feature/user/userSlice";
 import axios from "axios";
 import AddressModal from "../Modal/AddressModal";
-import { getCookie, deleteCookies } from "../../utils/helper";
+import { getCookie, deleteCookies } from "../../utils/helper_async";
 import Logo from "../../public/images/LogoNobg.png";
 import { City } from "@/app/types/DefaultType";
 import Link from "next/link";
@@ -112,7 +112,7 @@ const Navbar = (
 
     signOut();
     // Clear user state
-    
+
     //dispatch(setUser({ email: "", full_name: "", role: "" }));
 
     // Navigate to login or homepage
