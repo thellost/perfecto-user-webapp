@@ -19,12 +19,15 @@ export type City = {
 }
 
 export type User = {
-    name: string,
-    phone: string,
+    name?: string,
+    phone_number?: string,
     email: string,
-    hashed_password?: string,
-    full_adress?:string
+    roles: string,
+    hashed_password: string,
+    full_address?: string,
+    referral_code?: string
 }
+
 export type SearchList = {
     data: City[]
 }
