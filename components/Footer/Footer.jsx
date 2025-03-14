@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   FaInstagram,
   FaFacebook,
@@ -11,7 +11,6 @@ import { MdLanguage } from "react-icons/md";
 import newLogo from "../../public/images/LogoNobg.png";
 
 const Footer = () => {
-  const [isCompanyOpen, setIsCompanyOpen] = useState(false);
 
   return (
     <footer className="bg-black text-white py-6 px-4 md:px-20 lg:px-[70px]">

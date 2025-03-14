@@ -1,52 +1,6 @@
-import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb"
-import { User, client} from "../db"
-import bcrypt from "bcrypt"
-import { NextApiRequest, NextApiResponse } from "next"
+
 import { NextResponse } from "next/server"
-export async function createNewUser(user : User) {
-    
-    try {
-    const name = user?.name ?? "";
-    const email = user.email.toLowerCase();
-    const phone = user
-        ?.phone ?? ""
-    const hashed_password = await bcrypt.hash(user.hashed_password,12) 
-    const full_address = user
-        ?.full_address ?? ""
-    const roles = user
-        ?.roles ?? "buyer"
-    const referral = user?.referral ?? ""
-
-    const user_check = await client.send(new GetCommand({
-        TableName: 'users',
-        Key: {
-            email: email,
-            roles: roles
-        }
-    }));
-    if (user_check.Item ) {
-        throw Error("User Already Exist")
-    }
-    const command = new PutCommand({
-        TableName: "users",
-        Item: {
-            name:  name,
-            email: email,
-            phone: phone,
-            hashed_password: hashed_password,
-            full_address: full_address,
-            roles: roles,
-            referral: referral // no books for new user, an empty object
-        },
-        // ReturnValues: 'ALL_OLD',
-    })
-        const response = await client.send(command);
-        return response
-    } catch (error) {
-        throw error
-    }
-}
-
+import { createNewUser } from "../db"
 export async function POST(
     req: Request,
     
@@ -64,7 +18,7 @@ export async function POST(
         referral: raw_json.get("referral")?.toString() ?? ""
     
   }
-      const user = await createNewUser(user_data)
+      await createNewUser(user_data)
       return  new Response ("Done", {
         status: 200
       })

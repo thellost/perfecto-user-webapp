@@ -1,5 +1,5 @@
-
-import React, { useEffect, useState } from "react";
+"use client"
+import React, {  useState } from "react";
 import {
   FaBars,
   FaTimes,
@@ -206,7 +206,7 @@ const Navbar = (
                           Buildings
                         </div>
                         {buildings.map((data, index) => (
-                           <Link href={`'/property-details/${data._id}'`}>
+                           <Link href={`'/property-details/${data.id}'`}>
                           <div
                             key={index}
                             className="p-2 cursor-pointer hover:bg-gray-100 transition ease-in-out"

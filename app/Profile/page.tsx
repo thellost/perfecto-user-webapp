@@ -1,11 +1,14 @@
+
 import React from "react";
 import Navbar from "../../components/Navbar/Navbar";
-import { useAppSelector} from '@/app/hook'
+//import { useAppSelector} from '@/app/hook'
 import { toast } from "react-toastify";
 import Footer from "../../components/Footer/Footer";
-import { userSlice } from "@/feature/user/userSlice";
-const Profile = () => {
-    const handleCopy = () => {
+import { PhoneNumber } from "react-phone-number-input";
+
+function Profile()  {
+    async function handleCopy ()  {
+        "use server"
         navigator.clipboard.writeText(user?.referral_code).then(() => {
             toast.success('Referral code copied to clipboard!');
         }).catch(err => {
@@ -13,9 +16,14 @@ const Profile = () => {
         });
     };
 
-    const user = useAppSelector((state) => state.users.user);
-    console.log(user);
-
+    //const user = useAppSelector((state) => state.users.user);
+    //console.log(user);
+    const user = {
+        full_name: "",
+        email: "",
+        referral_code : "",
+        phone_number: ""
+    }
     return (
         <div className="min-h-screen overflow-x-hidden bg-gray-100">
             <div className="w-full z-10 px-4 border-b bg-white shadow-sm">

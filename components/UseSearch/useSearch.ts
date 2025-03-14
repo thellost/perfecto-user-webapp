@@ -9,6 +9,7 @@ interface props {
 }
 
 interface buildings {
+  _id: string,
   id: string,
   name: string,
   state: string,
