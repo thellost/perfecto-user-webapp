@@ -32,7 +32,7 @@ function Login()  {
         const response = await signIn("credentials", {
           email: formData.get("email"),
           password: formData.get("password"),
-          role: formData.get("role"),
+          userRole: formData.get("role"),
           redirect: false,
         });
         

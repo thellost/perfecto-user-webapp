@@ -14,7 +14,7 @@ export async function POST(
         name: (first_name + " " + Last_name),
         phone_number: raw_json.get("phone")?.toString() ?? "",
         email: raw_json.get("email")?.toString() ?? "",
-        roles: raw_json.get("role")?.toString() ?? "",
+        userRole: raw_json.get("role")?.toString() ?? "",
         hashed_password: raw_json.get("password")?.toString() ?? "",
         
         referral_code : generate({
@@ -23,6 +23,7 @@ export async function POST(
           })[0]
     
   }
+  console.log(user_data)
       await createNewUser(user_data, raw_json.get("referral")?.toString() ?? "")
       return  new Response ("Done", {
         status: 200

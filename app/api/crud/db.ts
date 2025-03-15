@@ -1,6 +1,6 @@
 import { User } from "@/app/types/DefaultType"
 import {DynamoDB, DynamoDBClientConfig} from "@aws-sdk/client-dynamodb"
-import {DynamoDBDocument, GetCommand, GetCommandOutput, PutCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb"
+import {DynamoDBDocument, GetCommand, GetCommandOutput, PutCommand, QueryCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb"
 import bcrypt from "bcrypt"
 
 const adaptor_config : DynamoDBClientConfig = {
@@ -28,18 +28,20 @@ export async function createNewUser(user : User, referral?: string) {
     const hashed_password = await bcrypt.hash(user.hashed_password,12) ?? ""
     const full_address = user
         ?.full_address ?? ""
-    const roles = user
-        ?.roles ?? "buyer"
+    const userRole = user.userRole ?? ""
     const referral_code = user?.referral_code ?? ""
     const referred_by = referral ?? ""
 
-    const user_check = await client.send(new GetCommand({
-        TableName: 'users',
-        Key: {
-            email: email
-        }
-    }));
-    if (user_check.Item ) {
+    const user_check = await client.send(new QueryCommand({
+        TableName: "users",
+        KeyConditionExpression:
+          "email = :inputEmail",
+        ExpressionAttributeValues: {
+          ":inputEmail": email
+        },
+      }));
+    console.log("after get")
+    if (user_check.Items?.[0] != undefined ) {
         throw Error("User Already Exist")
     }
     const command = new PutCommand({
@@ -50,7 +52,7 @@ export async function createNewUser(user : User, referral?: string) {
             phone_number: phone_number,
             hashed_password: hashed_password,
             full_address: full_address,
-            roles: roles,
+            userRole: userRole,
             referral_code:  referral_code,
             referred_by: referred_by,// no books for new user, an empty object
         },
@@ -64,27 +66,35 @@ export async function createNewUser(user : User, referral?: string) {
 }
 
 
-export async function validate_user(email? : string) {
+export async function validate_user(email? : string, role?: string) {
 
-    if (email == undefined){
+    console.log(role)
+    if (email == undefined || role == undefined){
         return Error("Wrong Credentials")
     }
     try {
-        const response = await client.send(new GetCommand({
-                TableName: 'users',
-                Key: {
-                    email: email.toLowerCase()
-                }
-            }));
+        console.log("verification...")
+        const response = await client.send(new QueryCommand({
+            TableName: "users",
+            KeyConditionExpression:
+              "email = :inputEmail and userRole = :inputRole",
+            ExpressionAttributeValues: {
+              ":inputEmail": email,
+              ":inputRole": role
+            },
+          }));
+          
+          console.log(response)
         
-        
-        const item = response.Item
-        if (item === undefined) {
+        const item = response.Items?.[0]
+        if (item === undefined || item === null) {
             throw new Error("Wrong Credentials")
         } else {
                 return item
         }
     } catch (err : any) {
+
+        console.log(err)
         return err
     }
 

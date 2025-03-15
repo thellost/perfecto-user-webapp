@@ -22,7 +22,7 @@ export type User = {
     name?: string,
     phone_number?: string,
     email: string,
-    roles: string,
+    userRole: string,
     hashed_password: string,
     full_address?: string,
     referral_code?: string
