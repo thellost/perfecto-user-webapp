@@ -36,8 +36,7 @@ export async function createNewUser(user : User, referral?: string) {
     const user_check = await client.send(new GetCommand({
         TableName: 'users',
         Key: {
-            email: email,
-            roles: roles
+            email: email
         }
     }));
     if (user_check.Item ) {
@@ -65,30 +64,19 @@ export async function createNewUser(user : User, referral?: string) {
 }
 
 
-export async function validate_user(email? : string, roles?: string) {
+export async function validate_user(email? : string) {
 
     if (email == undefined){
         return Error("Wrong Credentials")
     }
     try {
-        let response: GetCommandOutput;
-        if(roles == undefined || roles == null){
-            response = await client.send(new GetCommand({
+        const response = await client.send(new GetCommand({
                 TableName: 'users',
                 Key: {
                     email: email.toLowerCase()
                 }
             }));
-        }
-        else {
-            response = await client.send(new GetCommand({
-                TableName: 'users',
-                Key: {
-                    email: email.toLowerCase(),
-                    roles: roles.toLowerCase()
-                }
-            }));
-        }
+        
         
         const item = response.Item
         if (item === undefined) {
