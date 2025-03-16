@@ -1,5 +1,5 @@
 import { User } from "@/app/types/DefaultType"
-import {DynamoDB, DynamoDBClientConfig} from "@aws-sdk/client-dynamodb"
+import {DynamoDB, DynamoDBClientConfig, ScanCommand} from "@aws-sdk/client-dynamodb"
 import {DynamoDBDocument, GetCommand, GetCommandOutput, PutCommand, QueryCommand, QueryCommandOutput, UpdateCommand} from "@aws-sdk/lib-dynamodb"
 import bcrypt from "bcrypt"
 
@@ -111,4 +111,25 @@ export async function validate_user(email? : string, role?: string) {
         return err
     }
 
+}
+
+export async function getProperties(){
+    const command = new ScanCommand({
+        TableName: "properties"
+      });
+    
+      const response = await client.send(command);
+      return response.Items
+}
+
+export async function getPropertiesById(id: string) {
+    const command = new GetCommand({
+        TableName: "properties",
+        Key: {
+          id: id,
+        },
+      });
+    
+      const response = await client.send(command);
+      return response.Item
 }

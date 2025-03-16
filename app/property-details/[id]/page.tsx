@@ -1,6 +1,7 @@
 'use client'
+import { useParams } from 'next/navigation'
 import React, {useEffect, useState} from "react";
-import {useRouter} from "next/compat/router";
+import {useRouter} from "next/navigation";
 import Navbar from "../../../components/Navbar/Navbar";
 import { useAppSelector, useAppDispatch } from '@/app/hook'
 import Button from "../../../components/Button/Button";
@@ -35,8 +36,7 @@ import {Properties, UserState} from "@/app/types/DefaultType";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const PropertyDetails = () => {
-
-    const id = useRouter()?.query.id;
+    const id = useParams<{ id: string }>().id
     const navigate = useRouter();
 
     const [visibleSchools,
@@ -68,20 +68,16 @@ const PropertyDetails = () => {
         setShowMore(!showMore);
     };
 
-    const _id = id;
 
     const fetchPropertyDetails = async() => {
         try {
             console.log("fetching...")
             const url = await access_token
-                ? `${process.env.REACT_APP_API_URL}/auth/property/${_id}`
-                : `${process.env.REACT_APP_API_URL}/property/${_id}`;
+                ? `${process.env.NEXT_PUBLIC_REACT_APP_API_URL}/api/crud/property?id=${id}`
+                : `${process.env.NEXT_PUBLIC_REACT_APP_API_URL}/api/crud/property?id=${id}`;
 
-            const response = await fetch(url, {
-                headers: {
-                    Authorization: `Bearer ${access_token}`
-                }
-            });
+            const response = await fetch(url);
+            console.log(response)
             if (!response.ok) {
                 throw new Error("Failed to fetch property details");
             }
@@ -111,7 +107,7 @@ const PropertyDetails = () => {
 
         fetchPropertyDetails();
         fetchSimilarProperties();
-    }, [_id]);
+    }, [id]);
 
     if (loading) {
         return (
@@ -168,8 +164,8 @@ const PropertyDetails = () => {
         terms
     } = (properties as unknown as Properties);
 
-    const goToPropertyDetails = (_id : string) => {
-        navigate?.push(`/property-details/${_id}`);
+    const goToPropertyDetails = (id : string) => {
+        navigate?.push(`/property-details/${id}`);
         window.scrollTo({top: 0, behavior: "smooth"});
     };
 
@@ -191,7 +187,7 @@ const PropertyDetails = () => {
         }
 
         try {
-            const reponse = await axios.post(`${process.env.REACT_APP_API_URL}/wishlist/add/${_id}`, {}, { // Empty payload
+            const reponse = await axios.post(`${process.env.REACT_APP_API_URL}/wishlist/add/${id}`, {}, { // Empty payload
                 headers: {
                     Authorization: `Bearer ${access_token}`
                 }
@@ -211,7 +207,7 @@ const PropertyDetails = () => {
     const handleRemoveProperty = async() => {
         try
         {
-            const reponse = await axios.post(`${process.env.REACT_APP_API_URL}/wishlist/remove/${_id}`, {}, { // Empty payload
+            const reponse = await axios.post(`${process.env.REACT_APP_API_URL}/wishlist/remove/${id}`, {}, { // Empty payload
                 headers: {
                     Authorization: `Bearer ${access_token}`
                 }
@@ -333,7 +329,7 @@ const PropertyDetails = () => {
                 isOpen={isModalOpen}
                 onCloseModal={() => setIsModalOpen(false)}
                 onSave={handleSaveLoanDetails}
-                propertyId={_id}/>
+                propertyId={id}/>
             <div className="w-full z-10 px-4 border-b">
                 <Navbar searchedValue={undefined} setSearch={undefined} onPlaceSelect={undefined} properties={undefined} setProperties={undefined}/>
             </div>
@@ -515,7 +511,7 @@ const PropertyDetails = () => {
                   latitude: latitude,
                   longitude: longitude,
                   propertyName: name,
-                  propertyID: _id
+                  propertyID: id
                 }
                 ]}
                 isDetail={true} highlightedLocation={undefined} initialCenter={undefined}/>
@@ -666,7 +662,7 @@ const PropertyDetails = () => {
                                                 <h3 className="font-semibold">
                                                     {transformKeyForDisplay(subKey)}
                                                 </h3>
-                                                <p>{renderList(subValue)}</p>
+                                                {renderList(subValue)}
                                             </div>
                                         </div>
                                     ))}
@@ -880,7 +876,7 @@ const PropertyDetails = () => {
                 <h2 className="text-[24px] font-semibold my-4">Similar Homes</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {similarProperties.map((property, index) => (
-                        <div key={index} onClick={() => goToPropertyDetails(property._id)}>
+                        <div key={index} onClick={() => goToPropertyDetails(property.id)}>
                             <Cards {...property}/>
                         </div>
                     ))}

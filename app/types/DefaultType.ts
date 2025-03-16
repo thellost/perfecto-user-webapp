@@ -73,7 +73,7 @@ export type Properties = {
     monthlyPayment: string | '';
     downPayment: number;
     terms: number;
-    _id: string | '',
+    id: string | '',
     schools: School[],
     propertyListingDetails: string[] | '',
     amenities: string[] | '',
