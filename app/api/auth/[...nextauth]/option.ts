@@ -11,7 +11,7 @@ import bcrypt from 'bcrypt';
 import { userAgent } from "next/server";
 
 export const authOptions : NextAuthOptions = {
-    secret: (process.env.NEXTAUTH_SECRET as string),
+    secret: "ABCDEFGHIJKLMN12345",
     pages:{
         signIn: "/login"
     },
@@ -72,6 +72,7 @@ export const authOptions : NextAuthOptions = {
             if (session.user === undefined || session.user === null || session.user.email === null || session.user.email === undefined){
                 return session
             }
+            console.log(session)
             const user: User = await validate_user(session.user?.email);
             console.log(user)
             session.roles = user.userRole ?? "buyer";

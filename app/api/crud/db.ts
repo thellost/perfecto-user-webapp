@@ -1,6 +1,6 @@
 import { User } from "@/app/types/DefaultType"
 import {DynamoDB, DynamoDBClientConfig} from "@aws-sdk/client-dynamodb"
-import {DynamoDBDocument, GetCommand, GetCommandOutput, PutCommand, QueryCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb"
+import {DynamoDBDocument, GetCommand, GetCommandOutput, PutCommand, QueryCommand, QueryCommandOutput, UpdateCommand} from "@aws-sdk/lib-dynamodb"
 import bcrypt from "bcrypt"
 
 const adaptor_config : DynamoDBClientConfig = {
@@ -69,12 +69,24 @@ export async function createNewUser(user : User, referral?: string) {
 export async function validate_user(email? : string, role?: string) {
 
     console.log(role)
-    if (email == undefined || role == undefined){
+    if (email == undefined ){
         return Error("Wrong Credentials")
     }
     try {
         console.log("verification...")
-        const response = await client.send(new QueryCommand({
+        let response: QueryCommandOutput;
+        if (role == undefined){
+            response = await client.send(new QueryCommand({
+                TableName: "users",
+                KeyConditionExpression:
+                  "email = :inputEmail",
+                ExpressionAttributeValues: {
+                  ":inputEmail": email
+                },
+              }));
+        }
+        else {
+            response = await client.send(new QueryCommand({
             TableName: "users",
             KeyConditionExpression:
               "email = :inputEmail and userRole = :inputRole",
@@ -83,6 +95,7 @@ export async function validate_user(email? : string, role?: string) {
               ":inputRole": role
             },
           }));
+        }
           
           console.log(response)
         
