@@ -31,7 +31,7 @@ export async function POST(
       })
     } catch (err) {
         console.log((err as Error).message)
-      return NextResponse.json({"secret":(process.env.NEXT_PUBLIC_REACT_APP_API_URL as string)}, { status: 400 })
+      return NextResponse.json({"secret":(process.env.NEXT_PUBLIC_AUTH_DYNAMODB_ID as string)}, { status: 400 })
     }
   }
 

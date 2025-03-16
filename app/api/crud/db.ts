@@ -5,10 +5,10 @@ import bcrypt from "bcrypt"
 
 const adaptor_config : DynamoDBClientConfig = {
     credentials: {
-        accessKeyId: (process.env.AUTH_DYNAMODB_ID as string),
-        secretAccessKey: (process.env.AUTH_DYNAMODB_SECRET as string)
+        accessKeyId: (process.env.NEXT_PUBLIC_AUTH_DYNAMODB_ID as string),
+        secretAccessKey: (process.env.NEXT_PUBLIC_AUTH_DYNAMODB_SECRET as string)
     },
-    region: process.env.AUTH_DYNAMODB_REGION
+    region: process.env.NEXT_PUBLIC_AUTH_DYNAMODB_REGION
 }
 export const client = DynamoDBDocument.from(new DynamoDB(adaptor_config), {
     marshallOptions: {
