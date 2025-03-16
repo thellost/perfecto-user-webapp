@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server"
 import { createNewUser } from "../db"
 import {generate} from "referral-codes"
+import {serializeError} from 'serialize-error';
 export async function POST(
     req: Request,
     
@@ -30,7 +31,7 @@ export async function POST(
       })
     } catch (err) {
         console.log((err as Error).message)
-      return NextResponse.json({ error: (err as Error).message }, { status: 400 })
+      return NextResponse.json(serializeError(err), { status: 400 })
     }
   }
 
