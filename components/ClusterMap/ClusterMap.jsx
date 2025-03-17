@@ -5,7 +5,7 @@ import { GoogleMap, useLoadScript, InfoWindow } from "@react-google-maps/api";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { debounce } from "lodash";
 
-const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAP_API_KEY;
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY;
 
 const mapContainerStyle = {
   width: "100%",
@@ -29,7 +29,8 @@ export default function ClusterMap({ properties, onBoundsChanged }) {
   const prevPropertiesRef = useRef([]);
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+    id: process.env.NEXT_PUBLIC_GOOGLE_MAP_ID,
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
   });
 
   const handleCenterChanged = () => {
@@ -141,7 +142,7 @@ export default function ClusterMap({ properties, onBoundsChanged }) {
           >
             <div
               className="bg-white text-[#f08e80] gap-3 text-center text-[12px] font-medium flex  items-start cursor-pointer w-[190px]"
-              onClick={() => handleNavigate(selectedProperty._id)}
+              onClick={() => handleNavigate(selectedProperty.id)}
             >
               <div>
                 <img
