@@ -30,7 +30,7 @@ const recommendedProperties = [
         "monthlyPayment": 212000,
         "downPayment": 500000,
         "terms": "27",
-        "_id": 1
+        "stateid": 1
     }
 ]
 const Home = () => {
@@ -45,8 +45,8 @@ const Home = () => {
     const [isLoading,
         setIsLoading] = useState < boolean > (false);
     const router = useRouter()
-    const goToPropertyDetails = (_id : string) => {
-        router.push('/property-details/${_id}')
+    const goToPropertyDetails = (id : string) => {
+        router.push('/property-details/${id}')
     };
 
     const handlePlaceClick = (data : City) => {
@@ -84,11 +84,11 @@ const Home = () => {
 
             setPlaces(suggestedCities);
             setBuildings(() => responseData.map((res : {
-                _id: any;
+                id: any;
                 name: any;
                 state: any;
             }) => {
-                return {id: res._id, name: res.name, state: res.state};
+                return {id: res.id, name: res.name, state: res.state};
             }));
         } catch (error) {
             console.error("Error performing search:", error);
@@ -178,7 +178,7 @@ const Home = () => {
                                                 <div
                                                     key={index}
                                                     className="p-2 cursor-pointer hover:bg-gray-100 transition ease-in-out"
-                                                    onClick={() => goToPropertyDetails(data._id)}>
+                                                    onClick={() => goToPropertyDetails(data.id)}>
                                                     <div className="font-semibold">{data.address}</div>
                                                     <div className="text-gray-500">{data.state}</div>
                                                 </div>
@@ -365,9 +365,9 @@ const Home = () => {
                             monthlyPayment: any;
                             downPayment: any;
                             terms: any;
-                            _id: any
+                            id: any
                         }, index : React.Key | null | undefined) => (
-                            <div onClick={() => goToPropertyDetails(property._id)} key={index}>
+                            <div onClick={() => goToPropertyDetails(property.id)} key={index}>
                                 <Cards {...property}/>
                             </div>
                         ))}
