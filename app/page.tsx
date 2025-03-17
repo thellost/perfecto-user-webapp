@@ -32,13 +32,13 @@ const recommendedProperties = [
         "monthlyPayment": 212000,
         "downPayment": 500000,
         "terms": "27",
-        "_id": 1
+        "stateid": 1
     }
 ]
 const Home = () => {
     
     const { data: session } = useSession({
-        required: true,
+        required: false,
         onUnauthenticated() {
         },
     })
@@ -88,11 +88,11 @@ const Home = () => {
 
             setPlaces(suggestedCities);
             setBuildings(() => responseData.map((res : {
-                _id: any;
+                id: any;
                 name: any;
                 state: any;
             }) => {
-                return {id: res._id, name: res.name, state: res.state};
+                return {id: res.id, name: res.name, state: res.state};
             }));
         } catch (error) {
             console.error("Error performing search:", error);
@@ -180,7 +180,7 @@ const Home = () => {
                                             Buildings
                                         </div>
                                         {buildings.map((data : Properties, index) => (
-                                            <Link href={`'/property-details/${data._id}'`}>
+                                            <Link href={`'/property-details/${data.id}'`}>
                                                 <div
                                                     key={index}
                                                     className="p-2 cursor-pointer hover:bg-gray-100 transition ease-in-out">
@@ -371,7 +371,7 @@ const Home = () => {
                         monthlyPayment: any;
                         downPayment: any;
                         terms: any;
-                        _id: any
+                        id: any
                     }, index : React.Key | null | undefined) => (
                         <div key={index}>
                             <Cards {...property}/>

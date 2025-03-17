@@ -5,8 +5,6 @@ import { GoogleMap, useLoadScript, InfoWindow } from "@react-google-maps/api";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { debounce } from "lodash";
 
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY;
-
 const mapContainerStyle = {
   width: "100%",
   height: "100%",

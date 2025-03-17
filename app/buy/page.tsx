@@ -13,11 +13,11 @@ import { City, Properties, SearchList } from "../types/DefaultType";
 
 const BuyPage = () => {
     const location = useRouter()
-    const property = location?.query;
+    const property =  location?.query
     const [properties,
-        setProperties] = useState([]);
+        setProperties] = useState<Properties[]>([]);
     const [filteredProperties,
-        setFilteredProperties] = useState([]);
+        setFilteredProperties] = useState<Properties[]>([]);
     const [search,
         setSearch] = useState(property
         ?.city);
@@ -196,7 +196,7 @@ const BuyPage = () => {
                                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 sticky overflow-y-auto">
                                 {(filteredProperties as Properties[])?.map((property, index) => (
                 <div
-                  onClick={() => goToPropertyDetails(property._id)}
+                  onClick={() => goToPropertyDetails(property.id)}
                   key={index}
                 >
                   <Cards {...property} />
