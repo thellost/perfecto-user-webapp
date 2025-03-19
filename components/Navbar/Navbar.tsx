@@ -44,8 +44,8 @@ const Navbar = (
           
         },
     })
-
-
+    const user =  session 
+    
   const location = usePathname();
   const isHome = location === '/';
   const navigate = useRouter();
@@ -56,8 +56,7 @@ const Navbar = (
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isValueChanging, setIsValueChanging] = useState(false);
 
-  const user =  session 
-  console.log(user)
+  
   const dispatch = useAppDispatch();
   const { value, setValue, places, buildings, isLoading, updatedProperties } =
     useSearch({ searchedValue, properties });

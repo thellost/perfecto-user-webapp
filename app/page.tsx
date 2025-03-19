@@ -42,7 +42,6 @@ const Home = () => {
         onUnauthenticated() {
         },
     })
-    console.log(session)
     const [value,
         setValue] = useState < string > ("");
     const [places,
@@ -76,7 +75,7 @@ const Home = () => {
     const fetchSuggestions = async(searchValue : string | RegExp) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/search?address=${searchValue}`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_REACT_APP_API_URL}/api/crud/search?address=${searchValue}`);
             const responseData = await response.json();
             const suggestedCities = (cities as SearchList).data
                 ?.filter((city : {
@@ -85,7 +84,8 @@ const Home = () => {
                     const regex = new RegExp(searchValue, "i");
                     return regex.test(city.city);
                 }).slice(0, 5);
-
+            console.log(responseData)
+            console.log(suggestedCities)
             setPlaces(suggestedCities);
             setBuildings(() => responseData.map((res : {
                 id: any;
