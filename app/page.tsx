@@ -84,6 +84,7 @@ const Home = () => {
                     const regex = new RegExp(searchValue, "i");
                     return regex.test(city.city);
                 }).slice(0, 5);
+            console.log(searchValue)
             console.log(responseData)
             console.log(suggestedCities)
             setPlaces(suggestedCities);
@@ -101,18 +102,16 @@ const Home = () => {
         }
     };
 
-    const debounce = (func : {
-        (searchValue : any): Promise < void >;
-        apply?: any;
-    }, delay : number | undefined) => {
-        let debounceTimer : string | number | NodeJS.Timeout | undefined;
-        return function (...args : any) {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => func.apply(args), delay);
+    const debounce = <T extends unknown[]>( func: (...args: T) => void,delay: number ) => {
+        let timer: ReturnType< typeof setTimeout>;
+        return (...args: T) => {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(() => { func.call(null, ...args) }, delay);
         };
-    };
+    }
+    
 
-    const debouncedFetchSuggestions = useCallback(debounce(fetchSuggestions, 500), []);
+    const debouncedFetchSuggestions = debounce(fetchSuggestions, 500);
 
     useEffect(() => {
         if (value) {

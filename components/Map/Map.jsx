@@ -31,7 +31,7 @@ function Map({ locations }) {
     <div className="h-[60vh] w-full relative mt-4">
       <GoogleMapReact
         bootstrapURLKeys={{
-          key: process.env.GOOGLE_MAP_API_KEY,
+          key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
         }}
         defaultCenter={averageLocation}
         defaultZoom={14}

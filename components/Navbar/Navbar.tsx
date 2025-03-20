@@ -245,6 +245,16 @@ const Navbar = (
         >
           Buy
         </a>
+        <a
+        href="/refer-and-earn"
+          className={`hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer ${
+            isHome
+              ? "text-white hover:bg-[white] p-2 rounded-md"
+              : "text-black my-auto"
+          }`}
+        >
+          Referral Program
+        </a>
         <div className="relative">
           <a
             className={`hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer flex items-center ${

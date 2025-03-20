@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Search = ({setSearch}) => {
+const Search = (setSearch: any) => {
     return (
         <form className="max-w-3xl mx-auto w-full ">
             <div className="relative">

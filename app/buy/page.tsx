@@ -139,7 +139,7 @@ const BuyPage = () => {
             minLng: bounds.minLng,
             maxLng: bounds.maxLng,
             minPrice: 0,
-            maxPrice: 99999,
+            maxPrice: 9999999,
         };
 
         if (minPrice !== undefined) 
