@@ -16,7 +16,7 @@ const PaymentCalculator = ({
     const [term,
         setTerm] = useState(initialTerm);
 
-    const loanAmount = homePrice - downPayment;
+    const loanAmount = homePrice - (homePrice * downPayment / 100 );
     
     const numberOfPayments = term * 12;
    
@@ -45,6 +45,7 @@ const PaymentCalculator = ({
         // 2500.99 to be printed as $2,501
     });
     function onChange(value : Number, setValue : any) {
+      console.log(loanAmount)
         setValue(value)
     }
     return (
