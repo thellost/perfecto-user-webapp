@@ -324,7 +324,6 @@ const PropertyDetails = () => {
 
     return (
         <div className="min-h-screen overflow-x-hidden">
-            <ToastContainer/>
             <LoanModal
                 isOpen={isModalOpen}
                 onCloseModal={() => setIsModalOpen(false)}
@@ -586,22 +585,10 @@ const PropertyDetails = () => {
               )
             )}
           </div> */}
-                    <div className="mt-8">
-                        <h3 className="font-semibold text-[20px]">Learn More</h3>
-                    </div>
                     <div className="flex items-center mt-2">
-                        <img className="w-[80px] h-[80px]" src={agent.src}/>
-                        <div className="ml-4 text-start">
-                            <p className="font-semibold text-[16px] sm:text-[18px] text-[#f08e80]">
-                                Perfecto Agent Specialist
-                            </p>
-                            <p className="sm:text-[16px] text-[14px]">Perfecto</p>
-                            <p className="text-[#6c6c6c] sm:text-[16px] text-[14px]">
-                                Email: main@perfectohome.com
-                                <br/>
-                                Phone: 415-409-9614
-                            </p>
-                        </div>
+   
+                    
+
                     </div>
                     <div className="mt-4">
                         <AgentFrom/>
@@ -635,7 +622,8 @@ const PropertyDetails = () => {
             </div>
 
             <div className="sm:px-[150px] pb-[30px] px-[24px]">
-                <h2 className="text-[24px] font-semibold mb-2">Payment Calculator</h2>
+                <h2 className="text-[24px] font-semibold mb-2">
+                Buyer Savings Calculator</h2>
                 <PaymentCalculator/>
             </div>
             <div className="py-[24px] sm:px-[150px] px-[24px]">

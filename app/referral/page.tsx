@@ -31,7 +31,7 @@ function About() {
               </h2>
               <div className="sm:w-[308px] w-[260px] border-b-4 border-[#f08e80] mt-1"></div>
             </div>
-            <p className="mt-4 text-lg text-justify leading-relaxed text-black">
+            <p className="mt-4 text-lg text-justify leading-relaxed ">
               Perfecto Home is revolutionizing the real estate industry by
               putting buyers and sellers first. For hundreds of years, banks
               have been at the center of the home buying experience, leaving the

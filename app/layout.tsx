@@ -24,17 +24,20 @@ export default function RootLayout({
 }>) {
   return (
     <Providers>
+      
+      <ToastContainer></ToastContainer>
+      
+      <AuthProvider>
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
           
-        <ToastContainer></ToastContainer>
         {children}
-        </AuthProvider>
       </body>
     </html>
+    
+    </AuthProvider>
     </Providers>
   );
 }
