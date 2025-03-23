@@ -163,7 +163,7 @@ const Navbar = (
               </Link>
               <div className="relative inline-block mt-2 sm:mt-[20px]">
                 <input
-                  className="p-2 sm:p-2 sm:w-[350px] w-[200px] text-black focus:outline-none border text-[14px]"
+                  className="p-2 sm:p-2 sm:w-[350px] w-[200px] text-black focus:outline-none border border-gray-200 text-[14px]"
                   type="text"
                   placeholder="City, Address"
                   value={value}

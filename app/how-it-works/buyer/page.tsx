@@ -18,7 +18,7 @@ import Footer from "@/components/Footer/Footer";
 function About() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-50">
-      <div className="w-full z-10 px-4 border-b bg-white">
+      <div className="w-full z-10 px-4 border-gray-200 bg-white">
         <Navbar searchedValue={undefined} setSearch={undefined} onPlaceSelect={undefined} properties={undefined} setProperties={undefined} />
       </div>
       <div className="px-4 md:px-20 py-10">

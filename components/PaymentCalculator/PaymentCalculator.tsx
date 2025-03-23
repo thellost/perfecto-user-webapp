@@ -45,7 +45,6 @@ const PaymentCalculator = ({
         // 2500.99 to be printed as $2,501
     });
     function onChange(value : Number, setValue : any) {
-      console.log(loanAmount)
         setValue(value)
     }
     return (
@@ -68,11 +67,11 @@ const PaymentCalculator = ({
                         min="100000"
                         max="10000000"
                         step="10000"
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"></input>
                     <span
-                        className="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6">Min ($100,000)</span>
+                        className="text-sm text-gray-500 absolute start-0 -bottom-6">Min ($100,000)</span>
                     <span
-                        className="text-sm text-gray-500 dark:text-gray-400 absolute end-0 -bottom-6">Max ($10,000,000)</span>
+                        className="text-sm text-gray-500 absolute end-0 -bottom-6">Max ($10,000,000)</span>
                 </div>
             </div>
             <div className="mb-4 pt-5">
@@ -92,11 +91,11 @@ const PaymentCalculator = ({
                         min="0"
                         max="50"
                         step="1"
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
+                        className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer range-lg"></input>
                     <span
-                        className="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6">Min (0 %)</span>
+                        className="text-sm text-gray-500 absolute start-0 -bottom-6">Min (0 %)</span>
                     <span
-                        className="text-sm text-gray-500 dark:text-gray-400 absolute end-0 -bottom-6">Max (50 %)</span>
+                        className="text-sm text-gray-500 absolute end-0 -bottom-6">Max (50 %)</span>
                 </div>
             </div>
             <div className="mb-4 py-5">
