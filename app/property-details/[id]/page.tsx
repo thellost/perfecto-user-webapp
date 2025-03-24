@@ -865,7 +865,18 @@ const PropertyDetails = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {similarProperties.map((property, index) => (
                         <div key={index} onClick={() => goToPropertyDetails(property.id)}>
-                            <Cards {...property}/>
+                            <Cards
+                                            image={property.image}
+                                            price={0}
+                                            address={property.address}
+                                            beds={property.beds}
+                                            baths={property.baths}
+                                            sqft={property.sqft}
+                                            comingSoon={property.comingSoon}
+                                            monthlyPayment={property.monthlyPayment}
+                                            downPayment={property.downPayment}
+                                            terms={property.terms}
+                                        />
                         </div>
                     ))}
                 </div>

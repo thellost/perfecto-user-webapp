@@ -20,6 +20,7 @@ export async function GET(req : NextRequest) {
         if (data === undefined) {
             throw new Error("no data")
         }
+        console.log(data)
         return NextResponse.json(await data, {status: 200})
     } catch (err) {
         console.log((err as Error).message)

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { GoogleMap, useLoadScript, InfoWindow } from "@react-google-maps/api";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { debounce } from "lodash";
-
+import { Properties } from "@/app/types/DefaultType";
 const mapContainerStyle = {
   width: "100%",
   height: "100%",
@@ -15,28 +15,32 @@ const defaultOptions = {
   zoomControl: true,
 };
 
-export default function ClusterMap({ properties, onBoundsChanged }) {
+type Props = {
+  properties : Properties[],
+  onBoundsChanged : any,
+}
+const ClusterMap = ({properties, onBoundsChanged}:Props) => {
   const [mapCenter, setMapCenter] = useState({
     lat: 37.7749,
     lng: -122.4194,
   });
-  const [selectedProperty, setSelectedProperty] = useState(null);
-  const mapRef = useRef(null);
-  const markerClustererRef = useRef(null);
-  const markersRef = useRef([]);
-  const prevPropertiesRef = useRef([]);
+  const [selectedProperty, setSelectedProperty] = useState<Properties>();
+  const mapRef = useRef<google.maps.Map>(null);
+  const markerClustererRef = useRef<MarkerClusterer>(null);
+  const markersRef = useRef<google.maps.Marker[]>([]);
+  const prevPropertiesRef = useRef<Properties[]>([]);
 
   const { isLoaded, loadError } = useLoadScript({
     id: process.env.NEXT_PUBLIC_GOOGLE_MAP_ID,
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? "",
   });
 
   const handleCenterChanged = () => {
     if (mapRef.current) {
       const newCenter = mapRef.current.getCenter();
       setMapCenter({
-        lat: newCenter.lat(),
-        lng: newCenter.lng(),
+        lat: newCenter?.lat() || 37.7749,
+        lng: newCenter?.lng() || -122.4194,
       });
     }
   };
@@ -48,15 +52,17 @@ export default function ClusterMap({ properties, onBoundsChanged }) {
         markersRef.current.forEach((marker) => marker.setMap(null));
         markersRef.current = [];
 
+        console.log(properties[0].latitude, properties[0].longitude)
         // Create new markers
         const newMarkers = properties.map((point) => {
           const marker = new window.google.maps.Marker({
             position: {
-              lat: parseFloat(point.latitude),
-              lng: parseFloat(point.longitude),
+              lat: point.latitude,
+              lng: point.longitude,
             },
           });
-
+          
+          console.log(marker)
           marker.addListener("click", () => handleMarkerClick(point));
           return marker;
         });
@@ -85,11 +91,11 @@ export default function ClusterMap({ properties, onBoundsChanged }) {
 
   const navigate = useRouter();
 
-  const handleMarkerClick = (property) => {
+  const handleMarkerClick = (property: React.SetStateAction<Properties | undefined>) => {
     setSelectedProperty(property);
   };
 
-  const handleNavigate = (propertyID) => {
+  const handleNavigate = (propertyID: string) => {
     navigate.push(`/property-details/${propertyID}`);
   };
 
@@ -113,8 +119,8 @@ export default function ClusterMap({ properties, onBoundsChanged }) {
     [onBoundsChanged]
   );
 
-  if (loadError) return "Error loading maps";
-  if (!isLoaded) return "Loading Maps";
+  if (loadError) return <div>Error loading maps</div>;
+  if (!isLoaded) return <div>Loading Maps</div>;
 
   return (
     <div className="sm:h-[100vh] h-[65vh] w-[100%]">
@@ -133,10 +139,10 @@ export default function ClusterMap({ properties, onBoundsChanged }) {
         {selectedProperty && (
           <InfoWindow
             position={{
-              lat: parseFloat(selectedProperty.latitude),
-              lng: parseFloat(selectedProperty.longitude),
+              lat: selectedProperty?.latitude,
+              lng: selectedProperty?.longitude,
             }}
-            onCloseClick={() => setSelectedProperty(null)}
+            onCloseClick={() => setSelectedProperty(undefined)}
           >
             <div
               className="bg-white text-[#f08e80] gap-3 text-center text-[12px] font-medium flex  items-start cursor-pointer w-[190px]"
@@ -172,3 +178,4 @@ export default function ClusterMap({ properties, onBoundsChanged }) {
     </div>
   );
 }
+export default ClusterMap

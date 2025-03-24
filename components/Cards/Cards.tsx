@@ -1,6 +1,10 @@
 import React from "react";
+import { Properties } from "@/app/types/DefaultType";
 
-const Cards = ({ image, price, address, beds, baths, sqft, comingSoon, monthlyPayment, downPayment, terms  }) => {
+type CardProps = {
+  image: string, price?: number, address: string, beds: string, baths: string, sqft: string, comingSoon: string, monthlyPayment: string, downPayment: number, terms:number
+}
+const Cards = ({ image, price, address, beds, baths, sqft, comingSoon, monthlyPayment, downPayment, terms  }: CardProps) => {
   return (
     <div className="relative w-full h-80 overflow-hidden shadow-lg rounded-lg cursor-pointer transform transition-transform hover:scale-105">
       <img
@@ -9,11 +13,11 @@ const Cards = ({ image, price, address, beds, baths, sqft, comingSoon, monthlyPa
         alt="Property"
       />
       {comingSoon && (
-        <div className="absolute m-2 top-0 left-0 bg-black text-white text-sm font-bold px-2 py-1 rounded">
+        <div className="absolute m-2 top-0 left-0  text-white text-sm font-bold px-2 py-1 rounded">
           PERFECTO COMING SOON
         </div>
       )}
-      <div className="absolute inset-0 bg-black bg-opacity-40 text-white p-4 flex flex-col justify-end rounded-b-lg">
+      <div className="absolute inset-0 bg-black/40  text-white p-4 flex flex-col justify-end rounded-b-lg">
         {/* <div className="text-[20px] font-bold mb-2">${price?.toLocaleString()}</div> */}
         <div className="text-[17px] font-bold mb-2">
           <div>

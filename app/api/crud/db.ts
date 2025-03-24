@@ -1,6 +1,6 @@
 import { User } from "@/app/types/DefaultType"
-import {DynamoDB, DynamoDBClientConfig, ScanCommand} from "@aws-sdk/client-dynamodb"
-import {DynamoDBDocument, GetCommand, GetCommandOutput, PutCommand, QueryCommand, QueryCommandOutput, UpdateCommand} from "@aws-sdk/lib-dynamodb"
+import {DynamoDB, DynamoDBClientConfig} from "@aws-sdk/client-dynamodb"
+import {DynamoDBDocument, GetCommand, ScanCommand, PutCommand, QueryCommand, QueryCommandOutput, UpdateCommand} from "@aws-sdk/lib-dynamodb"
 import bcrypt from "bcrypt"
 
 const adaptor_config : DynamoDBClientConfig = {

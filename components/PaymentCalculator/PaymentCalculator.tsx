@@ -16,18 +16,16 @@ const PaymentCalculator = ({
     const [term,
         setTerm] = useState(initialTerm);
 
-    const loanAmount = homePrice - (homePrice * downPayment / 100 );
-    
+    const loanAmount = homePrice - (homePrice * downPayment / 100);
+
     const numberOfPayments = term * 12;
-   
-    
+
     const propertyTaxes = (homePrice * propertyTaxRate) / 12;
 
     const perfectoMonthlyInterestRate = (interestRate / 100) / 12;
     const perfectoMonthlyPrincipalAndInterest = (loanAmount * perfectoMonthlyInterestRate) / (1 - Math.pow(1 + perfectoMonthlyInterestRate, -numberOfPayments));
     const perfectoTotalMonthlyPayment = perfectoMonthlyPrincipalAndInterest + propertyTaxes;
-    
-    
+
     const NormalMonthlyInterestRate = (7 / 100) / 12;
     const NormalMonthlyPrincipalAndInterest = (loanAmount * NormalMonthlyInterestRate) / (1 - Math.pow(1 + NormalMonthlyInterestRate, -numberOfPayments));
     const NormalTotalMonthlyPayment = NormalMonthlyPrincipalAndInterest + propertyTaxes;
@@ -67,11 +65,9 @@ const PaymentCalculator = ({
                         min="100000"
                         max="10000000"
                         step="10000"
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"></input>
-                    <span
-                        className="text-sm text-gray-500 absolute start-0 -bottom-6">Min ($100,000)</span>
-                    <span
-                        className="text-sm text-gray-500 absolute end-0 -bottom-6">Max ($10,000,000)</span>
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#f08e80]"></input>
+                    <span className="text-sm text-gray-500 absolute start-0 -bottom-6">Min ($100,000)</span>
+                    <span className="text-sm text-gray-500 absolute end-0 -bottom-6">Max ($10,000,000)</span>
                 </div>
             </div>
             <div className="mb-4 pt-5">
@@ -91,36 +87,45 @@ const PaymentCalculator = ({
                         min="0"
                         max="50"
                         step="1"
-                        className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer range-lg"></input>
-                    <span
-                        className="text-sm text-gray-500 absolute start-0 -bottom-6">Min (0 %)</span>
-                    <span
-                        className="text-sm text-gray-500 absolute end-0 -bottom-6">Max (50 %)</span>
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-lg accent-[#f08e80]"></input>
+                    <span className="text-sm text-gray-500 absolute start-0 -bottom-6">Min (0 %)</span>
+                    <span className="text-sm text-gray-500 absolute end-0 -bottom-6">Max (50 %)</span>
                 </div>
             </div>
             <div className="mb-4 py-5">
                 <div className='grid grid-cols-2'>
-                <p className=" font-bold col-start-1">Traditional Rate (30-year fixed)</p>
-                
-<p className="font-bold col-">Perfecto Rate  </p>
-                <p className='font-bold py-1 text-xl'> 7 %</p>
+                    <p className=" font-bold col-start-1">Traditional Rate (30-year fixed)</p>
 
-<p className='font-bold py-1 text-xl'> 5.175 %</p>
+                    <p className="font-bold col-">Perfecto Rate
+                    </p>
+                    <p className='font-bold py-1 text-xl'>
+                        7 %</p>
+
+                    <p className='font-bold py-1 text-xl'>
+                        5.175 %</p>
                 </div>
             </div>
             <div className='bg-gray-100 px-5 py-5 rounded-xl grid grid-cols-2'>
-              <div className="text-xl font-semibold mb-4 ">
-              Normal Monthly Payment: 
-              </div>
-              <div className="text-xl font-semibold mb-4 text-right" >
-              ${NormalTotalMonthlyPayment.toFixed(2)}
-              </div>
-              <div className="text-xl font-semibold mb-4 ">
-              Perfecto Monthly Payment: 
-              </div>
-              <div className="text-xl font-semibold mb-4 text-right" >
-              ${perfectoTotalMonthlyPayment.toFixed(2)}
-              </div>
+                <div className="text-xl font-semibold mb-4 ">
+                    Normal Monthly Payment:
+                </div>
+                <div className="text-xl font-semibold mb-4 text-right">
+                    {formatter.format(NormalTotalMonthlyPayment)}
+                </div>
+                <div className="text-xl font-semibold mb-4 ">
+                    Perfecto Monthly Payment:
+                </div>
+                <div className="text-xl font-semibold mb-4 text-right">
+                    {formatter.format(perfectoTotalMonthlyPayment)}
+                </div>
+            </div>
+            <div className='bg-gray-100  text-green-700 px-5 py-5 mt-5 rounded-xl grid grid-cols-2'>
+                <div className="text-xl font-semibold mb-4 ">
+                    Total Saved over 30 Years:
+                </div>
+                <div className="text-xl text-green-700 font-semibold mb-4 text-right">
+                    {formatter.format(((NormalTotalMonthlyPayment * term * 12) - (perfectoTotalMonthlyPayment * term * 12)))}
+                </div>
             </div>
         </div>
     );

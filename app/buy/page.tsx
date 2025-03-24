@@ -4,20 +4,20 @@ import Navbar from "@/components/Navbar/Navbar";
 import Cards from "@/components/Cards/Cards";
 import ClusterMap from "@/components/ClusterMap/ClusterMap";
 import Filters from "@/components/Filters/Filters";
-import { useRouter } from "next/compat/router";
+import {useRouter} from "next/compat/router";
 import axios from "axios";
 import cities from "@/data-mock/csvjson.json";
 import Footer from "@/components/Footer/Footer";
-import { City, Properties, SearchList } from "../types/DefaultType";
-
+import {City, Properties, SearchList} from "../types/DefaultType";
 
 const BuyPage = () => {
     const location = useRouter()
-    const property =  location?.query
+    const property = location
+        ?.query
     const [properties,
-        setProperties] = useState<Properties[]>([]);
+        setProperties] = useState < Properties[] > ([]);
     const [filteredProperties,
-        setFilteredProperties] = useState<Properties[]>([]);
+        setFilteredProperties] = useState < Properties[] > ([]);
     const [search,
         setSearch] = useState(property
         ?.city);
@@ -32,24 +32,41 @@ const BuyPage = () => {
 
     const navigate = useRouter();
 
-    const goToPropertyDetails = (_id: any) => {
-        navigate?.push(`/property-details/${_id}`);
-    };
 
-    const handlePlaceSelect = (data: { lat: React.SetStateAction<number>; lng: React.SetStateAction<number>; }) => {
+    const handlePlaceSelect = (data : {
+        lat: React.SetStateAction < number >;
+        lng: React.SetStateAction < number >;
+    }) => {
         setLat(data.lat);
         setLng(data.lng);
         handleSubmitClick();
     };
 
     const handleSubmitClick = useCallback(async(minPrice?: number, maxPrice?: number, minBath?: number, maxBath?: number, minBeds?: number, maxBeds?: number, minSqft?: number, maxSqft?: number, minLot?: number, maxLot?: number, minYearBuilt?: number, maxYearBuilt?: number, statuses?: string[]) => {
-        const buildParams = (params: { [x: string]: any; address?: any; city?: any; minPrice?: number | undefined; maxPrice?: number | undefined; minBaths?: number | undefined; maxBaths?: number | undefined; minBeds?: number | undefined; maxBeds?: number | undefined; minSqft?: number | undefined; maxSqft?: number | undefined; minLotSize?: number | undefined; maxLotSize?: number | undefined; minYearBuilt?: number | undefined; maxYearBuilt?: number | undefined; }) => {
-          let result: Record<string, any> = {};
-          for (const key in params) {
-              if (params[key] !== null && params[key] !== undefined && params[key] !== "") {
-                  result[key] = params[key];
-              }
-          }
+        const buildParams = (params : {
+            [x : string]: any;
+            address?: any;
+            city?: any;
+            minPrice?: number | undefined;
+            maxPrice?: number | undefined;
+            minBaths?: number | undefined;
+            maxBaths?: number | undefined;
+            minBeds?: number | undefined;
+            maxBeds?: number | undefined;
+            minSqft?: number | undefined;
+            maxSqft?: number | undefined;
+            minLotSize?: number | undefined;
+            maxLotSize?: number | undefined;
+            minYearBuilt?: number | undefined;
+            maxYearBuilt?: number | undefined;
+        }) => {
+            let result : Record < string,
+                any > = {};
+            for (const key in params) {
+                if (params[key] !== null && params[key] !== undefined && params[key] !== "") {
+                    result[key] = params[key];
+                }
+            }
             return result;
         };
 
@@ -76,7 +93,7 @@ const BuyPage = () => {
             .join("&");
 
         const statusQueryString = statuses && statuses.length > 0
-            ? statuses.map((status: string | number | boolean) => `status=${encodeURIComponent(status)}`).join("&")
+            ? statuses.map((status : string | number | boolean) => `status=${encodeURIComponent(status)}`).join("&")
             : "";
 
         const finalQueryString = [queryString, statusQueryString]
@@ -84,16 +101,17 @@ const BuyPage = () => {
             .join("&");
 
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/search?${finalQueryString}`);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_REACT_APP_API_URL}/api/crud/property`);
             const data = response.data;
             setProperties((prevProperties) => {
-                if (JSON.stringify(prevProperties) !== JSON.stringify(data)) {
+                if (prevProperties !== data) {
                     return data;
                 }
                 return prevProperties;
             });
             setFilteredProperties((prevProperties) => {
-                if (JSON.stringify(prevProperties) !== JSON.stringify(data)) {
+
+                if (prevProperties !== data) {
                     return data;
                 }
                 return prevProperties;
@@ -108,7 +126,7 @@ const BuyPage = () => {
                 setLng(suggestedCities[0].lng || -71.057083);
             } else {
                 setLat((property
-                  ?.lat as unknown as number));
+                    ?.lat as unknown as number));
                 setLng((property
                     ?.lng as unknown as number));
             }
@@ -132,14 +150,19 @@ const BuyPage = () => {
         }
     }, [minPrice, maxPrice, handleSubmitClick]);
 
-    const handleBoundsChanged = async(bounds: { minLat: any; maxLat: any; minLng: any; maxLng: any; }) => {
+    const handleBoundsChanged = async(bounds : {
+        minLat: number;
+        maxLat: number;
+        minLng: number;
+        maxLng: number;
+    }) => {
         const params = {
             minLat: bounds.minLat,
             maxLat: bounds.maxLat,
             minLng: bounds.minLng,
             maxLng: bounds.maxLng,
             minPrice: 0,
-            maxPrice: 9999999,
+            maxPrice: 9999999
         };
 
         if (minPrice !== undefined) 
@@ -152,63 +175,73 @@ const BuyPage = () => {
             .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key as keyof typeof params])}`)
             .join("&");
 
-        console.log("Fetching properties with params: ", params);
 
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/search?${queryString}`);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_REACT_APP_API_URL}/api/crud/property`);
             const data = response.data;
-            console.log("Filtered properties: ", data);
             setFilteredProperties(data);
+
         } catch (error) {
             console.error("Error fetching properties:", error);
         }
     };
 
     return (
-            <div className="min-h-screen overflow-x-hidden">
-                <div className="w-full z-10 px-4 border-b">
-                    <Navbar
-                        searchedValue={search}
-                        setSearch={setSearch}
-                        onPlaceSelect={handlePlaceSelect}
-                        properties={properties}
-                        setProperties={setProperties}/>
-                </div>
-                <div
-                    className="grid sm:grid-cols-2 grid-cols-1 sm:px-[90px] px-[24px] my-[32px] gap-[24px] sm:h-auto">
-                    <div>
-                        <ClusterMap
-                            properties={filteredProperties}
-                            onBoundsChanged={handleBoundsChanged}/>
-                    </div>
-                    <div>
-                        <div className="py-2">
-                            <h2 className="text-[24px] font-medium">
-                                Explore This Neighborhood
-                            </h2>
-                            <Filters
-                                onSubmit={handleSubmitClick}
-                                setMaxPrice={setMaxPrice}
-                                setMinPrice={setMinPrice}/>
-                        </div>
-                        <div className="flex-1 overflow-y-auto h-[calc(100vh-150px)]">
-                            <div
-                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 sticky overflow-y-auto">
-                                {(filteredProperties as Properties[])?.map((property, index) => (
-                <div
-                  onClick={() => goToPropertyDetails(property.id)}
-                  key={index}
-                >
-                  <Cards {...property} />
-                </div>
-              ))}
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <Footer/>
+        <div className="min-h-screen overflow-x-hidden">
+            <div className="w-full z-10 px-4 border-b border-gray-200 bg-white">
+                <Navbar
+                    searchedValue={search}
+                    setSearch={setSearch}
+                    onPlaceSelect={handlePlaceSelect}
+                    properties={properties}
+                    setProperties={setProperties}/>
             </div>
+            <div
+                className="grid sm:grid-cols-2 grid-cols-1 sm:px-[90px] px-[24px] my-[32px] gap-[24px] sm:h-auto">
+                <div>
+                    <ClusterMap
+                        properties={filteredProperties}
+                        onBoundsChanged={handleBoundsChanged}/>
+                </div>
+                <div>
+                    <div className="py-2">
+                        <h2 className="text-[24px] font-medium">
+                            Explore This Neighborhood
+                        </h2>
+                        <Filters
+                            onSubmit={handleSubmitClick}
+                            setMaxPrice={setMaxPrice}
+                            setMinPrice={setMinPrice}/>
+                    </div>
+                    <div className="flex-1 overflow-y-auto h-[calc(100vh-150px)]">
+                        <div
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 sticky overflow-y-auto">
+                            {(filteredProperties as Properties[])?.map((property, index) => (
+                                <a href={"/property-details/"+property.id}>
+                                    <div  key={index}>
+                                        <Cards
+                                            image={property.image}
+                                            price={0}
+                                            address={property.address}
+                                            beds={property.beds}
+                                            baths={property.baths}
+                                            sqft={property.sqft}
+                                            comingSoon={property.comingSoon}
+                                            monthlyPayment={property.monthlyPayment}
+                                            downPayment={property.downPayment}
+                                            terms={property.terms}
+                                            key={index}
+                                        />
+                                    </div>
+                                    </a>
+                                ))}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <Footer/>
+        </div>
     );
 };
 
