@@ -3,22 +3,28 @@ import Navbar from "../../components/Navbar/Navbar";
 //import { useAppSelector} from '@/app/hook'
 import { toast } from "react-toastify";
 import Footer from "../../components/Footer/Footer";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 import { authOptions } from "../api/auth/[...nextauth]/option";
+import { redirect } from "next/navigation";
+import { Sidebar } from "@/components/Sidebar/Sidebar";
 
 function Profile()  {
-    
      const {data: session} = useSession({
         required: true,
         onUnauthenticated() {
+            
+            redirect("/login")
         }})
+    console.log(session)
     const user = session
     return (
-        <div className="min-h-screen overflow-x-hidden bg-gray-100">
-            <div className="w-full z-10 px-4 border-b bg-white shadow-sm">
-                <Navbar searchedValue={undefined} setSearch={undefined} onPlaceSelect={undefined} properties={undefined} setProperties={undefined} />
-            </div>
+        <div className="min-h-screen overflow-x-hidden">
+            
+                  
+            <main className="gap-4 p-4 flex ">
+                  <Sidebar />
+                  
             <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
                 <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">User Profile</h2>
                 {
@@ -61,6 +67,7 @@ function Profile()  {
                     )
                 }
             </div>
+                </main>
             <Footer />
         </div >
     );

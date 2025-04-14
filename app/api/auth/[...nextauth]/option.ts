@@ -69,7 +69,7 @@ export const authOptions : NextAuthOptions = {
     callbacks: {
         //  The extended shape of session is defined in @types/next-auth.d.ts
         async session({ session }) {
-            if (session.user === undefined || session.user === null || session.user.email === null || session.user.email === undefined){
+            if (session.user === undefined || session.user === null || session.user.email === null || session.user.email === undefined || session.user.name === undefined){
                 return session
             }
             console.log(session)

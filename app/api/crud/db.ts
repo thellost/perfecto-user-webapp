@@ -133,3 +133,24 @@ export async function getPropertiesById(id: string) {
       const response = await client.send(command);
       return response.Item
 }
+
+export async function fetchReferredPersonsFromDatabase(referralCode: string) {
+  try {
+      const command = new QueryCommand({
+          TableName: "referral",
+          KeyConditionExpression: "referral_code = :referralCode",
+          ExpressionAttributeValues: {
+              ":referralCode": referralCode
+          }
+      });
+
+      const response = await client.send(command);
+      if (response.Items?.length === 0) {
+          throw new Error("Referral code not found");
+      }
+      return response.Items?.[0];
+  } catch (error) {
+      console.error("Error fetching referral by code:", error);
+      throw error;
+  }
+}
