@@ -10,6 +10,10 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-midnight: #121063;
+  --color-primaryOrange: #f08e90;
+  --color-primaryOrangeHover: #f08e90;
+  --color-primaryOrangeActive: #f08e90;
 }
 
 body {

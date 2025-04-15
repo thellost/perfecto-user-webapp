@@ -352,16 +352,6 @@ const Navbar = (
             </Link>
           </>
         )}
-        {(user?.roles === "agent" || user?.roles === "seller") && (
-          <p
-            className={`hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer ${
-              isHome ? "text-white hover:bg-[white] p-2" : "text-black my-auto"
-            }`}
-            onClick={openModal}
-          >
-            Submit Address
-          </p>
-        )}
         {user?.roles === "admin" && (
           <Link href="/list-address">
           <p

@@ -1,5 +1,5 @@
 'use client'
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
     FaMoneyBillWave,
     FaChartLine,
@@ -15,44 +15,170 @@ import Navbar from "@/components/Navbar/Navbar";
 import Banner from "@/public/images/about.jpeg";
 import Banner2 from "@/public/images/hero.jpg";
 import Footer from "@/components/Footer/Footer";
-function About() {
+import Link from "next/link";
+import {useSession} from "next-auth/react";
+import {toast} from "react-toastify";
+function referAndEarn() {
+
+    const session = useSession()
+
+    const [loading,
+        setLoading] = useState(true);
+    const [referral_code,
+        setReferralCode] = useState < string | null > (null);
+
+    useEffect(() => {
+
+        if (session
+            ?.status === "authenticated") {
+            setLoading(false);
+            setReferralCode(session
+                ?.data
+                    ?.referral_code);
+
+        } else if (session
+            ?.status === "loading") {
+            setLoading(true);
+        } else if (session
+            ?.status === "unauthenticated") {
+            setLoading(false);
+        }
+    }, [session])
     return (
         <div className="min-h-screen overflow-x-hidden bg-gray-50">
-            <div className="w-full z-10 px-4 border-b border-gray-200 bg-white">
+
+            <div className="w-full z-10 px-4 border-b sticky border-gray-200 bg-white">
                 <Navbar
                     searchedValue={undefined}
                     setSearch={undefined}
                     onPlaceSelect={undefined}
                     properties={undefined}
                     setProperties={undefined}/>
+
             </div>
-            <div className="max-w-[85rem] px-4 sm:px-6 lg:px-8 mx-auto">
+            {/* CTA Section*/}
+
+            <div className="bg-white h-screen flex items-center">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        {/* Left Section: Images */}
+                        <div className="relative grid grid-cols-2 gap-6">
+                            <div className="relative -translate-y-20">
+                                <img
+                                    className="object-cover aspect-31/48  rounded-lg shadow-lg "
+                                    src="https://images.unsplash.com/photo-1670272505340-d906d8d77d03?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
+                                    alt="Image 1"/>
+                            </div>
+                            <div className="relative translate-y-20">
+                                <img
+                                    className="object-cover aspect-31/48 rounded-lg shadow-lg"
+                                    src="https://images.unsplash.com/photo-1671726203638-83742a2721a1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
+                                    alt="Image 2"/>
+                            </div>
+                        </div>
+                        {/* Right Section: Text */}
+                        <div>
+                            <h4 className=" text-gray-500 font-bold pb-2">PerfectoHome Referral Program</h4>
+                            <h2 className="text-2xl text-gray-900 sm:text-4xl text-left">
+                                Cheaper mortgages for your friend, and 10% commision for you.
+                            </h2>
+                            <p className="mt-4 text-lg text-black text-justify">
+                                Earn rewards by referring your friends and family to our platform. For every
+                                successful referral, they will get cheaper Mortgage and you will receive a 10%
+                                commission on their mortgage payments. What's not to love?
+                            </p>
+                            {loading
+                                ? <div role="status">
+                                        <svg
+                                            aria-hidden="true"
+                                            className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                                            viewBox="0 0 100 101"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                                fill="currentColor"/>
+                                            <path
+                                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                                fill="currentFill"/>
+                                        </svg>
+                                        <span className="sr-only">Loading...</span>
+                                    </div>
+                                :  referral_code ? <div className="mt-4">
+                                    <label htmlFor="referralLink" className="block text-gray-700">
+                                        Get a link and share it with your friends
+                                    </label>
+                                    <div className="mt-2 flex rounded-md shadow-sm">
+                                        <div className="w-full">
+
+                                            <input
+                                                type="text"
+                                                id="referralLink"
+                                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-bl-lg rounded-tl-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                placeholder="Your Link Here"
+                                                value={`${process.env.NEXT_PUBLIC_REACT_APP_API_URL}/signup/?referral_code=${referral_code}`}
+                                                disabled={true}
+                                                required/>
+                                        </div>
+                                        <button
+                                            className="inline-flex cursor-pointer items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-primaryOrange hover:bg-primaryOrangeHover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primaryOrange"
+                                            onClick={() => {
+                                            navigator
+                                                .clipboard
+                                                .writeText(`${process.env.NEXT_PUBLIC_REACT_APP_API_URL}/signup/?referral_code=${referral_code}`)
+                                                .then(() => {
+                                                    toast.success('Referral Link copied to clipboard!');
+                                                })
+                                                .catch(err => {
+                                                    console.error('Failed to copy: ', err);
+                                                });
+                                        }}>
+
+                                            Copy
+                                        </button>
+
+                                    </div>
+
+                                    <div className="mt-4">
+                                        By clicking copy you agree to the&nbsp;
+                                        <Link href="/" className="text-blue-600">Perfecto Home Referral Term</Link>
+                                    </div>
+                                </div> : <div className="pt-5">You need to log in to get your referral link.<br></br>
+                                    <Link href="/login" className="text-blue-600">Click Here to login</Link> 
+                                    </div>
+                                    
+}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="max-w-[85rem] py-10 px-4 sm:px-6 lg:px-8 mx-auto">
                 <div className="grid lg:grid-cols-3 gap-y-8 lg:gap-y-0 lg:gap-x-6">
                     <div
                         className="lg:col-span-1 lg:w-full lg:h-full lg:bg-linear-to-r lg:from-gray-50 lg:via-transparent lg:to-transparent dark:from-neutral-800">
                         <div className="sticky top-0 start-0 py-10">
-                            <div
-                                className=" ">
-                            
-<h1 className="text-xl font-bold">In This Article</h1>
+                            <div className=" ">
+
+                                <h1 className="text-xl font-bold">In This Article</h1>
                             </div>
                             <div>
-                              <h2>How to Earn Benefits</h2>
+                                <h2>How to Earn Benefits</h2>
                             </div>
                             <div>
-                              <h2>
-                              Refer and Earn Eligibility</h2>
+                                <h2>
+                                    Refer and Earn Eligibility</h2>
                             </div>
                             <div>
-                              <h2>
-                              Terms and Conditions</h2>
+                                <h2>
+                                    Terms and Conditions</h2>
                             </div>
                             <div>
-                              <h2>
-                              
-Frequently Asked Questions</h2>
+                                <h2>
+
+                                    Frequently Asked Questions</h2>
                             </div>
-                            
+
                             <div className="space-y-6"></div>
                         </div>
                     </div>
@@ -71,14 +197,17 @@ Frequently Asked Questions</h2>
                                     <p className="text-xs sm:text-sm text-gray-800 dark:text-neutral-200">January 18, 2023</p>
                                 </div>
 
-                                <p className="text-lg text-justify text-gray-800 dark:text-neutral-200">The Refer and Earn program gives both new and existing customers access to benefits when purchasing a qualifying Tesla product.
+                                <p className="text-lg text-justify text-gray-800 dark:text-neutral-200">The
+                                    Refer and Earn program gives both new and existing customers access to benefits
+                                    when purchasing a qualifying Tesla product. If you have credits from a previous
+                                    version of the Refer and Earn program and you currently have a qualifying Tesla
+                                    product, you can redeem those credits in the Tesla app up until their expiration
+                                    date.
+                                </p>
 
-If you have credits from a previous version of the Refer and Earn program and you currently have a qualifying Tesla product, you can redeem those credits in the Tesla app up until their expiration date.
-</p>
-
-                                <p className="text-lg text-justify text-gray-800 dark:text-neutral-200">We're proud to be a
-                                    part of creating a more open culture and to continue building a product that
-                                    supports this vision.</p>
+                                <p className="text-lg text-justify text-gray-800 dark:text-neutral-200">We're
+                                    proud to be a part of creating a more open culture and to continue building a
+                                    product that supports this vision.</p>
 
                                 <div className="text-center">
                                     <div className="grid lg:grid-cols-2 gap-3">
@@ -364,4 +493,4 @@ If you have credits from a previous version of the Refer and Earn program and yo
     );
 }
 
-export default About;
+export default referAndEarn;
