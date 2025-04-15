@@ -11,7 +11,7 @@ import bcrypt from 'bcrypt';
 import { userAgent } from "next/server";
 
 export const authOptions : NextAuthOptions = {
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET ?? "ABC",
+    secret: process.env.NEXTAUTH_SECRET ?? process.env.NEXT_PUBLIC_NEXTAUTH_SECRET ?? "ABC",
     pages:{
         signIn: "/login"
     },

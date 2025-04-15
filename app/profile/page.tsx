@@ -6,8 +6,8 @@ import Footer from "../../components/Footer/Footer";
 import { signOut, useSession } from "next-auth/react";
 
 import { authOptions } from "../api/auth/[...nextauth]/option";
-import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
+import { redirect } from "next/navigation";
 
 function Profile()  {
      const {data: session} = useSession({
