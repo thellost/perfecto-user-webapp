@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FiUser } from "react-icons/fi";
 import {
   XAxis,
@@ -12,38 +12,78 @@ import {
   LineChart,
 } from "recharts";
 
-const data = [
-  {
-    name: "Jan",
-    NewReferral: 2,
-  },
-  {
-    name: "Feb",
-    NewReferral: 3,
-  },
-  {
-    name: "Mar",
-    NewReferral: 4,
-  },
-  {
-    name: "Apr",
-    NewReferral: 0,
-  },
-  {
-    name: "May",
-    NewReferral: 1,
-  },
-  {
-    name: "Jun",
-    NewReferral: 0,
-  },
-  {
-    name: "Jul",
-    NewReferral: 2,
-  },
-];
+export const ActivityGraph = ({ referral_code }: { referral_code: string | undefined}) => {
+  const [data, setData] = useState<{ name: string; NewReferral: number }[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-export const ActivityGraph = () => {
+  useEffect(() => {
+    const fetchReferralData = async () => {
+      try {
+        setLoading(true);
+        console.log("fetching referral data...");
+        const response = await fetch(
+          `/api/crud/dashboard/getReferralData?referral_code=${referral_code}`
+        );
+        console.log("response", response);
+        const result = await response.json();
+
+        // Process referral data to group by month
+        const monthlyData: { [key: string]: number } = {};
+        result.referredPersons.forEach((referral: { created_at: string }) => {
+          const month = new Date(referral.created_at).toLocaleString("default", {
+            month: "short",
+          });
+          monthlyData[month] = (monthlyData[month] || 0) + 1;
+        });
+
+        // Convert monthly data into chart format
+        const chartData = Object.keys(monthlyData).map((month) => ({
+          name: month,
+          NewReferral: monthlyData[month],
+        }));
+
+        setData(chartData);
+      } catch (error) {
+        console.error("Error fetching referral data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (referral_code) {
+      fetchReferralData();
+    }
+  }, [referral_code]);
+  console.log("loading data...");
+  if (loading) {
+    return (
+      <div className="flex justify-center col-span-8 items-center h-64">
+        <div className="w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  console.log("finish loading data");
+  console.log(data);
+  if (data.length === 0) {  
+    return (
+      <div className="col-span-8 overflow-hidden rounded border border-stone-300 h-64">
+        {/* Title Section */}
+        <div className="p-4">
+          <h3 className="flex items-center gap-1.5 font-medium text-lg">
+            <FiUser /> Activity
+          </h3>
+        </div>
+
+        {/* Centered No Data Message */}
+        <div className="flex justify-center items-center h-1/2">
+          <div className="text-center">
+            <p className="text-xl text-stone-500">No data available</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  // Ensure the data is sorted by month
   return (
     <div className="col-span-8 overflow-hidden rounded border border-stone-300">
       <div className="p-4">

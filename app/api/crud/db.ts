@@ -44,6 +44,7 @@ export async function createNewUser(user : User, referral?: string) {
     if (user_check.Items?.[0] != undefined ) {
         throw Error("User Already Exist")
     }
+    // Add user to the users table
     const command = new PutCommand({
         TableName: "users",
         Item: {
@@ -54,12 +55,25 @@ export async function createNewUser(user : User, referral?: string) {
             full_address: full_address,
             userRole: userRole,
             referral_code:  referral_code,
-            referred_by: referred_by,// no books for new user, an empty object
-        },
-        // ReturnValues: 'ALL_OLD',
+            referred_by: referred_by,
+        }
     })
         const response = await client.send(command);
+    // Add data to the referral table
+    if (referral_code) {
+      const referralCommand = new PutCommand({
+          TableName: "referral",
+          Item: {
+              referred_by: referred_by,
+              email: email,
+              created_at: new Date().toISOString(),
+          },
+      });
+      await client.send(referralCommand);
+  }
         return response
+    
+        
     } catch (error) {
         throw error
     }
@@ -138,7 +152,7 @@ export async function fetchReferredPersonsFromDatabase(referralCode: string) {
   try {
       const command = new QueryCommand({
           TableName: "referral",
-          KeyConditionExpression: "referral_code = :referralCode",
+          KeyConditionExpression: "referred_by = :referralCode",
           ExpressionAttributeValues: {
               ":referralCode": referralCode
           }
@@ -148,7 +162,7 @@ export async function fetchReferredPersonsFromDatabase(referralCode: string) {
       if (response.Items?.length === 0) {
           throw new Error("Referral code not found");
       }
-      return response.Items?.[0];
+      return response.Items;
   } catch (error) {
       console.error("Error fetching referral by code:", error);
       throw error;

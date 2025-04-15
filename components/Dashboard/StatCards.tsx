@@ -1,22 +1,60 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 
-export const StatCards = () => {
+export const StatCards = ({ referral_code }: { referral_code: string | undefined }) => {
+  const [totalReferred, setTotalReferred] = useState<number>(0);
+  const [totalEarnings, setTotalEarnings] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchReferralData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `/api/crud/dashboard/getReferralData?referral_code=${referral_code}`
+        );
+        const result = await response.json();
+
+        // Calculate total referred persons and earnings
+        const referredPersons = result.referredPersons || [];
+        setTotalReferred(referredPersons.length);
+        setTotalEarnings(referredPersons.length * 1.2); // $1.2 per referred person
+      } catch (error) {
+        console.error("Error fetching referral data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+      fetchReferralData();
+    
+  }, [referral_code]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center  col-span-12 h-32">
+        <div className="w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <>
       <Card
         title="Total Referred Persons"
-        value="12"
+        value={totalReferred.toString()}
         pillText="0%"
         trend="up"
-        period="From Jan 1st - Jul 31st"
+        period="All time"
       />
       <Card
-        title="Total Earnings From Refferal"
-        value="$27.97"
-        pillText="1.01%"
-        trend="down"
-        period="From Jan 1st - Jul 31st"
+        title="Total Earnings From Referral"
+        value={`$${totalEarnings.toFixed(2)}`}
+        pillText="0%"
+        trend="up"
+        period="All time"
       />
     </>
   );
