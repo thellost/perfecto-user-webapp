@@ -11,7 +11,7 @@ import { redirect } from "next/navigation";
 
 function Profile()  {
      const {data: session} = useSession({
-        required: false,
+        required: true,
         onUnauthenticated() {
             
             redirect("/login")
