@@ -1,6 +1,6 @@
 import React from "react";
 import { TopBar } from "../TopBar";
-import { ReferralGrid } from "./Grid";
+import { ReferralGrid } from "./ReferralGrid";
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/option"
 export const ReferralDashboard = async () => {

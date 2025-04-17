@@ -8,8 +8,9 @@ import { RxCrossCircled } from "react-icons/rx";
 export const ReferralDetail = ({
   referralData,
 }: {
-  referralData: { referred_user_email: string; name: string; created_at: string; hasPurchasedHouse: boolean }[];
+  referralData: { email: string; name: string; created_at: string; hasPurchasedHouse: boolean }[];
 }) => {
+  console.log("Referral Data:", referralData);
   return (
     <div className="col-span-12 p-4 rounded border border-stone-300">
       <div className="mb-4 flex items-center justify-between">
@@ -32,7 +33,7 @@ export const ReferralDetail = ({
             referralData.map((referral, index) => (
               <TableRow
                 key={index}
-                email={referral.referred_user_email}
+                email={referral.email}
                 name={referral.name || "N/A"}
                 joinDate={new Date(referral.created_at).toLocaleDateString()}
                 hasPurchasedHouse={referral.hasPurchasedHouse ? "Yes" : ""}
