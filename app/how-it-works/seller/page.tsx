@@ -39,12 +39,12 @@ function About() {
 
                         <div className="mt-4 md:mt-0">
                             <h2
-                                className=" text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Perfecto Homes takes the bank out of the home buying process.</h2>
-                            <p className="tracking-tight font-bold mt-1 text-[#f08e80]">
+                                className="text-black text-2xl md:text-3xl font-semibold sm:text-left text-center">Perfecto Homes takes the bank out of the home buying process.</h2>
+                            <p className="tracking-tight font-semibold text-lg mt-1 text-[#f08e80]">
                                 helping buyers save on costs and sellers maximize returns.
                             </p>
                             <p
-                                className="mb-6 mt-1 py-5 font-light text-gray-500 md:text-lg dark:text-gray-400">Tired
+                                className="mb-6 mt-1 py-5 font-light text-gray-500 text-justify md:text-lg dark:text-gray-400">Tired
                                 of banks eating into your home's value? At Perfecto, we've revolutionized the
                                 process. Our innovative approach connects buyers and sellers directly, and
                                 reduces decades of interest payments and unnecessary fees. The result? Sellers

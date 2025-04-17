@@ -11,6 +11,7 @@ export async function POST(
     const raw_json = await req.formData()
     const first_name = raw_json.get("firstName")?.toString() ?? ""
     const Last_name = raw_json.get("lastName")?.toString() ?? ""
+    const referral_code = raw_json.get("referral")?.toString() ?? ""
     const user_data = {
         name: (first_name + " " + Last_name),
         phone_number: raw_json.get("phone")?.toString() ?? "",

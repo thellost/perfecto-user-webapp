@@ -41,6 +41,8 @@ const PropertyDetails = () => {
 
     const [visibleSchools,
         setVisibleSchools] = useState<number>(4);
+    const [monthlyPayment, setMonthlyPayment] = useState<number | null>(null);
+    const [othersMonthlyPayment, setothersMonthlyPayment] = useState<number | null>(null);
     const [showMore,
         setShowMore] = useState(true);
     const [properties,
@@ -159,9 +161,8 @@ const PropertyDetails = () => {
         publicRecords,
         wishlisted,
         propertyImages,
-        monthlyPayment,
-        downPayment,
-        terms
+        downPayment = (price * 0.2),
+        terms = 30,
     } = (properties as unknown as Properties);
 
     const goToPropertyDetails = (id : string) => {
@@ -258,7 +259,6 @@ const PropertyDetails = () => {
     // Calculating "Others Monthly Payment"
     const othersInterestRate = 7.25; //  interest rate for others const
     const principal = price - downPayment;
-    const othersMonthlyPayment = calculateMonthlyPayment(principal, othersInterestRate, terms);
 
     // Bar chart data and optionsconst
     const data = {
@@ -344,6 +344,12 @@ const PropertyDetails = () => {
                                 ${price.toLocaleString()}
                             </h2>
                             <p className="text-[#6c6c6c]">Price</p>
+                        </div>
+                        <div className="text-center border-r my-4 px-4">
+                            <h2 className="text-black text-[20px] font-semibold">
+                                ${monthlyPayment ? monthlyPayment.toLocaleString() : calculateMonthlyPayment(price, 7.25, terms) }
+                            </h2>
+                            <p className="text-[#6c6c6c]">Monthly</p>
                         </div>
                         <div className="text-center border-r my-4 px-4">
                             <h2 className="text-black text-[20px] font-semibold">{beds}</h2>
@@ -624,7 +630,7 @@ const PropertyDetails = () => {
             <div className="sm:px-[150px] pb-[30px] px-[24px]">
                 <h2 className="text-[24px] font-semibold mb-2">
                 Buyer Savings Calculator</h2>
-                <PaymentCalculator/>
+                <PaymentCalculator initialHomePrice={price} setMonthlyPayment={setMonthlyPayment} setOthersMonthlyPayment={setothersMonthlyPayment}/>
             </div>
             <div className="py-[24px] sm:px-[150px] px-[24px]">
                 <h2 className="text-[24px] font-semibold mb-2">

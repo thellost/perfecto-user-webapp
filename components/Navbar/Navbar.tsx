@@ -416,6 +416,12 @@ const Navbar = (
             About
           </a>
           <a
+            href="/refer-and-earn"
+            className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"
+          >
+            Referral Program
+          </a>
+          <a
             href="/buy"
             className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"
           >

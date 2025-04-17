@@ -1,13 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { StatCards } from "./StatCards";
-import { ActivityGraph } from "./ActivityGraph";
-import { UsageRadar } from "./UsageRadar";
-import { ReferralDetail } from "./ReferralDetail";
+import { StatCards } from "../StatCards";
+import { ActivityGraph } from "../ActivityGraph";
+import { UsageRadar } from "../UsageRadar";
+import { ReferralDetail } from "../ReferralDetail";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { ListingForm } from "../ListingForm";
 
-export const Grid = () => {
+export const ListingGrid = () => {
   const session = useSession({
     required: true,
     onUnauthenticated() {
@@ -52,13 +53,7 @@ export const Grid = () => {
 
   return (
     <div className="px-4 grid gap-3 grid-cols-12 load">
-      <StatCards
-        totalReferred={referralData.length}
-        totalEarnings={referralData.length * 1.2} // $1.2 per referred person
-      />
-      <ActivityGraph referralData={referralData} />
-      <UsageRadar />
-      <ReferralDetail referralData={referralData} />
+      <ListingForm />
     </div>
   );
 };

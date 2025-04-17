@@ -3,7 +3,7 @@ import React, { FormEvent } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Button from "../../components/Button/Button";
 import axios from "axios";
-import { useRouter} from "next/navigation";
+import { useRouter, useSearchParams} from "next/navigation";
 import { toast } from "react-toastify";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
@@ -19,7 +19,8 @@ const SignUp = () => {
 
 
   const navigate = useRouter();
-
+  const referralCode = useSearchParams().get("referral_code") ?? undefined;
+  console.log(referralCode)
   const onSubmit = async(event : FormEvent<HTMLFormElement>) => {
       
     event.preventDefault()
@@ -192,7 +193,9 @@ const SignUp = () => {
               type="text"
               id="referral"
               {...register("referral")}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              defaultValue={referralCode ? referralCode : ""}
+              disabled={referralCode ? true : false}
+              className={`w-full px-3 py-2 border ${referralCode ? `bg-gray-100` : ``} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
             />
           </div>
 
