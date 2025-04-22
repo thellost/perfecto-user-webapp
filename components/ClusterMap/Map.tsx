@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {GoogleMap, MarkerF, useJsApiLoader} from '@react-google-maps/api';
+import {GoogleMap, MarkerF, useLoadScript} from '@react-google-maps/api';
 import {
     setKey,
     setDefaults,
@@ -38,7 +38,7 @@ const Map = ({parent_latitude = 37.7749, parent_longitude = -122.4194, onLocatio
         setAddress] = useState('');
     const [defaultCenter,
         setDefaultCenter] = useState({lat: parent_latitude, lng: parent_longitude});
-    const {isLoaded} = useJsApiLoader({
+    const {isLoaded} = useLoadScript({
         id: 'google-map-script',
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? ""
     });
