@@ -1,5 +1,5 @@
 'use client'
-import React, { FormEvent } from "react";
+import React, { FormEvent, Suspense } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Button from "../../components/Button/Button";
 import axios from "axios";
@@ -9,7 +9,7 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import Banner from "@/public/images/hero.jpg";
 
-const SignUp = () => {
+const SignUpComponent = () =>{
   const {
     register,
     handleSubmit,
@@ -43,6 +43,7 @@ const SignUp = () => {
   };
 
   return (
+    
     <div className="flex items-center justify-center min-h-screen"
     style={{
       backgroundImage: `url(${Banner.src})`,
@@ -233,4 +234,12 @@ const SignUp = () => {
   );
 };
 
+const SignUp = () => {
+  return (
+    // You could have a loading skeleton as the `fallback` too
+    <Suspense>
+      <SignUpComponent />
+    </Suspense>
+  )
+}
 export default SignUp;

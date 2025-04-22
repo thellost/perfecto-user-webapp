@@ -28,10 +28,9 @@ const PaymentCalculator = ({
   const numberOfPayments = term * 12;
   const propertyTaxes = (homePrice * propertyTaxRate) / 12;
 
+  /* Make the perfecto monthly only interest rate */
   const perfectoMonthlyInterestRate = perfectoInterestRate / 100 / 12;
-  const perfectoMonthlyPrincipalAndInterest =
-    (loanAmount * perfectoMonthlyInterestRate) /
-    (1 - Math.pow(1 + perfectoMonthlyInterestRate, -numberOfPayments));
+  const perfectoMonthlyPrincipalAndInterest = perfectoMonthlyInterestRate * loanAmount;
   const perfectoTotalMonthlyPayment =
     perfectoMonthlyPrincipalAndInterest + propertyTaxes;
         
@@ -99,7 +98,7 @@ const PaymentCalculator = ({
             type="range"
             onChange={(e) => onChange(Number(e.target.value), setHomePrice)}
             defaultValue={homePrice}
-            min="50000"
+            min="100000"
             max="2000000"
             step="10000"
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#f08e80]"
@@ -108,7 +107,7 @@ const PaymentCalculator = ({
             Min ($100,000)
           </span>
           <span className="text-sm text-gray-500 absolute end-0 -bottom-6">
-            Max ($5,000,000)
+            Max ($2,000,000)
           </span>
         </div>
       </div>
