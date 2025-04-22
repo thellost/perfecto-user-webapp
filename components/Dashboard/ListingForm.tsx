@@ -1,11 +1,32 @@
 "use client";
 
-import React from "react";
+import React, {useState} from "react";
 import {FiArrowUpRight, FiDollarSign, FiMoreHorizontal} from "react-icons/fi";
 import {FaRegCheckCircle} from "react-icons/fa";
 import {RxCrossCircled} from "react-icons/rx";
-
+import Map from "../ClusterMap/Map";
+import {TagField} from "../TagInput/TagField";
+import useTagInput from "@/hooks/useTag";
+import { AmenitiesSuggestionList } from "@/data/suggestion_data";
 export const ListingForm = () => {
+
+    //define the MaxTags
+
+    const MAX_TAGS = 10;
+
+    //Retrieve all the returned items from the hook
+
+    const {tags, handleAddTag, handleRemoveTag} = useTagInput(MAX_TAGS); // pass the maximum tags
+
+    // Handle form submission
+
+    const handleSubmit = () => {
+        // Send tags to the backend
+        console.log(tags);
+    };
+    const ReactTags = require('react-tag-input').WithOutContext;
+    const [location,
+        setLocation] = useState({lat: 0, lng: 0});
     return (
         <div className="col-span-10 p-4 rounded border border-stone-300">
             <form>
@@ -15,9 +36,11 @@ export const ListingForm = () => {
                         className="border-b border-gray-900/10 pb-12 grid grid-cols-1 sm:grid-cols-12 gap-x-8">
                         {/* Left Column: Context */}
                         <div className="sm:col-span-4">
-                            <h2 className="text-base font-semibold text-gray-900">Create Listing</h2>
+                            <h2 className="text-base font-semibold text-gray-900">Address Details</h2>
                             <p className="mt-1 text-sm text-gray-600">
                                 This information will be displayed publicly so be careful what you share.
+                                <br/>
+                                Please make sure to enter the correct address.
                             </p>
                         </div>
 
@@ -115,6 +138,39 @@ export const ListingForm = () => {
                             </div>
 
                             <div className="col-span-full">
+                                <Map onLocationChange={setLocation}/>
+
+                            </div>
+                            <div className="sm:col-span-3 ">
+                                <label htmlFor="latitude" className="block text-sm/6 font-medium text-gray-900">Latitude</label>
+                                <div className="mt-2">
+                                    <input
+                                        type="text"
+                                        name="latitude"
+                                        id="latitude"
+                                        disabled
+                                        autoComplete="address-level1"
+                                        defaultValue={location.lat || ""}
+                                        className="block w-full rounded-md disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500 disabled:shadow-none bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"/>
+                                </div>
+                            </div>
+                            <div className="sm:col-span-3 ">
+                                <label
+                                    htmlFor="longitude"
+                                    className="block text-sm/6 font-medium text-gray-900">Longitude</label>
+                                <div className="mt-2">
+                                    <input
+                                        type="text"
+                                        name="longitude"
+                                        id="longitude"
+                                        disabled
+                                        autoComplete="address-level1"
+                                        value={location.lng || ""}
+                                        className="block w-full disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500 disabled:shadow-none rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"/>
+                                </div>
+                            </div>
+
+                            <div className="col-span-full">
                                 <label
                                     htmlFor="about"
                                     className="block col-span-full text-sm font-medium text-gray-900">
@@ -130,8 +186,25 @@ export const ListingForm = () => {
                                 </div>
                             </div>
 
-                            {/* Side-by-Side Inputs for Baths and Bedrooms */}
-                            <div className="grid grid-cols-2 gap-x-4 sm:col-span-3">
+                        </div>
+                    </div>
+
+                    {/* Section 2 */}
+                    <div
+                        className="border-b border-gray-900/10 pb-12 grid grid-cols-1 sm:grid-cols-12 gap-x-8">
+                        {/* Left Column: Context */}
+                        <div className="sm:col-span-4">
+                            <h2 className="text-base font-semibold text-gray-900">Home Facts</h2>
+                            <p className="mt-1 text-sm text-gray-600">
+                                This information will be displayed publicly so be careful what you share.
+                                <br/>
+                                Information about building facts, interior, exterior, amenities , etc.
+                            </p>
+                        </div>
+
+                        {/* Right Column: Input Fields */}
+                        <div className="grid grid-cols-6 gap-y-8 gap-x-3 sm:col-span-8">
+                            <div className="grid grid-cols-3  gap-x-4 col-span-6">
                                 <div>
                                     <label htmlFor="bedrooms" className="block text-sm font-medium text-gray-900">
                                         Bedrooms
@@ -162,64 +235,61 @@ export const ListingForm = () => {
                                             min="0"/>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Section 2 */}
-                    <div
-                        className="border-b border-gray-900/10 pb-12 grid grid-cols-1 sm:grid-cols-2 gap-x-6">
-                        {/* Left Column: Context */}
-                        <div>
-                            <h2 className="text-base font-semibold text-gray-900">Personal Information</h2>
-                            <p className="mt-1 text-sm text-gray-600">
-                                Use a permanent address where you can receive mail.
-                            </p>
-                        </div>
-
-                        {/* Right Column: Input Fields */}
-                        <div className="grid grid-cols-1 gap-y-8">
-                            <div>
-                                <label htmlFor="first-name" className="block text-sm font-medium text-gray-900">
-                                    First name
-                                </label>
-                                <div className="mt-2">
-                                    <input
-                                        type="text"
-                                        name="first-name"
-                                        id="first-name"
-                                        autoComplete="given-name"
-                                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"/>
+                                <div>
+                                    <label htmlFor="stories" className="block text-sm font-medium text-gray-900">
+                                        Stories
+                                    </label>
+                                    <div className="mt-2">
+                                        <input
+                                            type="number"
+                                            name="Stories"
+                                            id="Stories"
+                                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+                                            placeholder="0"
+                                            min="0"/>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div>
-                                <label htmlFor="last-name" className="block text-sm font-medium text-gray-900">
-                                    Last name
-                                </label>
-                                <div className="mt-2">
-                                    <input
-                                        type="text"
-                                        name="last-name"
-                                        id="last-name"
-                                        autoComplete="family-name"
-                                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"/>
+                            <div className="sm:col-span-6">
+                                <label htmlFor="style" className="block text-sm/6 font-medium text-gray-900">Style</label>
+                                <div className="mt-2 grid grid-cols-1">
+                                    <select
+                                        id="style"
+                                        name="style"
+                                        autoComplete="country-name"
+                                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <option>House</option>
+                                        <option>Condominium</option>
+                                        <option>Apartment</option>
+                                        <option>Mansion</option>
+                                    </select>
+                                    <svg
+                                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                        viewBox="0 0 16 16"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                        data-slot="icon">
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+                                            clip-rule="evenodd"/>
+                                    </svg>
                                 </div>
                             </div>
-
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-900">
-                                    Email address
-                                </label>
+                            <div className="sm:col-span-6"> 
+                            <label htmlFor="stories" className="block text-sm font-medium text-gray-900">
+                                        Amenities
+                                    </label>
                                 <div className="mt-2">
-                                    <input
-                                        id="email"
-                                        name="email"
-                                        type="email"
-                                        autoComplete="email"
-                                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"/>
-                                </div>
+                                <TagField
+                                        tags={tags}
+                                        addTag={handleAddTag}
+                                        removeTag={handleRemoveTag}
+                                        maxTags={MAX_TAGS} 
+                                        suggestions={AmenitiesSuggestionList}/>
+                                    </div>
                             </div>
+
                         </div>
                     </div>
 

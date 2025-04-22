@@ -197,15 +197,15 @@ const BuyPage = () => {
                     setProperties={setProperties}/>
             </div>
             <div
-                className="grid sm:grid-cols-2 grid-cols-1 sm:px-[90px] px-[24px] my-[32px] gap-[24px] sm:h-auto">
+                className="grid sm:grid-cols-2 grid-cols-1 sm:pr-[90px] pr-[24px] gap-[24px] sm:h-auto">
                 <div>
                     <ClusterMap
                         properties={filteredProperties}
                         onBoundsChanged={handleBoundsChanged}/>
                 </div>
                 <div>
-                    <div className="py-2">
-                        <h2 className="text-[24px] font-medium">
+                    <div className="">
+                        <h2 className="text-[24px] font-medium py-3">
                             Explore This Neighborhood
                         </h2>
                         <Filters
@@ -240,7 +240,6 @@ const BuyPage = () => {
                     </div>
                 </div>
             </div>
-            <Footer/>
         </div>
     );
 };

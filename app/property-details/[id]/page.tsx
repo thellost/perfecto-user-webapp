@@ -490,7 +490,7 @@ const PropertyDetails = () => {
                         .length > 0 && (
                         <div className="mt-[42px] sm:px-0 px-[24px]">
                             <h3 className="font-semibold text-[24px]">Amenities</h3>
-                            <div className="grid grid-cols-3 gap-[40px] mt-4">
+                            <div className="grid grid-cols-2 gap-[40px] mt-4">
                                 {Object
                                     .entries(amenities)
                                     .map(([
@@ -498,12 +498,8 @@ const PropertyDetails = () => {
                                     ], index) => (
                                         <React.Fragment key={`${title}-${index}`}>
                                             <div className="sm:py-2 py-1 border-b col-span-1 sm:text-[16px] text-[14px]">
-                                                {transformKeyForDisplay(title)}
-                                            </div>
-                                            <div className="sm:py-2 py-1 border-b col-span-1 sm:text-[16px] text-[14px]">
                                                 {value}
                                             </div>
-                                            <div></div>
                                         </React.Fragment>
                                     ))}
                             </div>
@@ -599,6 +595,32 @@ const PropertyDetails = () => {
                     <div className="mt-4">
                         <AgentFrom/>
                     </div>
+                </div>
+            </div>
+            
+            <div className="sm:px-[150px] px-[24px] py-10">
+                <h2 className="text-[24px] font-semibold mb-2">Home Facts</h2>
+                <div className="grid sm:grid-cols-2 grid-cols-1 sm:gap-10 gap-4">
+                    {Object
+                        .entries(homeFacts)
+                        .map(([
+                            key, value
+                        ], index) => (
+                            <React.Fragment key={`${key}-${index}`}>
+                                <div
+                                    className="grid sm:grid-cols-3 grid-cols-2 border-b text-[14px] sm:text-[16px]">
+                                    <div>{transformKeyForDisplay(key)}</div>
+                                    <div>
+                                        <strong>
+                                            {key === "aboveGradeFinishedSqFt" || key === "totalFinishedSqFt" || key === "lotSize"
+                                                ? `${value} SqFt`
+                                                : value}
+                                        </strong>
+                                    </div>
+                                    <div></div>
+                                </div>
+                            </React.Fragment>
+                        ))}
                 </div>
             </div>
             <div className="py-[42px] sm:px-[150px] px-[24px]">

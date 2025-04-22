@@ -7,7 +7,7 @@ function Slider({ image, propertyImages }) {
   const images = propertyImages || (image ? [image] : []);
 
   return (
-    <div className="text-white text-[20px] w-full max-w-[1360px] mx-auto sticky top-[50px]">
+    <div className="text-white text-[20px] w-full max-w-[1360px] max-h-auto mx-auto sticky top-[50px]">
       <Carousel
         infiniteLoop={true}
         showIndicators={false}
