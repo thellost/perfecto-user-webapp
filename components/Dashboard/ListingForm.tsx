@@ -8,11 +8,12 @@ import Map from "../ClusterMap/Map";
 import {TagField} from "../TagInput/TagField";
 import useTagInput from "@/hooks/useTag";
 import { AmenitiesSuggestionList } from "@/data/suggestion_data";
+import  ImageUploader  from "../FileUploader/ImageUploader";
 export const ListingForm = () => {
 
     //define the MaxTags
 
-    const MAX_TAGS = 10;
+    const MAX_TAGS = 10; // Set the maximum number of tags allowed
 
     //Retrieve all the returned items from the hook
 
@@ -290,6 +291,27 @@ export const ListingForm = () => {
                                     </div>
                             </div>
 
+                        </div>
+                    </div>
+
+                    {/* Section 2 */}
+                    <div
+                        className="border-b border-gray-900/10 pb-12 grid grid-cols-1 sm:grid-cols-12 gap-x-8">
+                        {/* Left Column: Context */}
+                        <div className="sm:col-span-4">
+                            <h2 className="text-base font-semibold text-gray-900">Images</h2>
+                            <p className="mt-1 text-sm text-gray-600">
+                                This information will be displayed publicly so be careful what you share.
+                                <br/>
+                                Photos and Landscape view of the properties
+                            </p>
+                        </div>
+
+                        {/* Right Column: Input Fields */}
+                        <div className="grid grid-cols-6 gap-y-8 gap-x-3 sm:col-span-8">
+                           <div className="sm:col-span-full">
+                            <ImageUploader defaultValue={[]}/>
+                           </div>
                         </div>
                     </div>
 
