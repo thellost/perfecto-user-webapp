@@ -302,11 +302,11 @@ const Navbar = (
         </a>
         {user?.user?.name ? (
           <>
-          <Link href="/profile">
-            <span
+          <Link href="/profile" 
               className={`text-[16px] font-semibold cursor-pointer ${
                 isHome ? "text-white p-2" : "text-black my-auto"
-              }`}
+              }`}>
+            <span
             >
               Welcome, {user?.user?.name.split(" ")[0]}
             </span>
@@ -401,7 +401,7 @@ const Navbar = (
         </div>
         <div className="flex flex-col space-y-4 p-4">
           {user?.user?.name && (
-            <Link href="/profile">
+            <Link href="/profile" className=""> 
             <span
               className={`text-[16px] font-semibold text-black my-auto cursor-pointer`}
             >
@@ -409,6 +409,7 @@ const Navbar = (
             </span>
             </Link>
           )}
+          
           <a
             href="/about"
             className="block text-black hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer"

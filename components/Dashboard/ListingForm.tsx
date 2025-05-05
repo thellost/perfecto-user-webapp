@@ -9,6 +9,7 @@ import {TagField} from "../TagInput/TagField";
 import useTagInput from "@/hooks/useTag";
 import { AmenitiesSuggestionList } from "@/data/suggestion_data";
 import  ImageUploader  from "../FileUploader/ImageUploader";
+import KeyValueForm from "../KeyValue/PropertyInformation";
 export const ListingForm = () => {
 
     //define the MaxTags
@@ -317,8 +318,8 @@ export const ListingForm = () => {
 
                     {/* Section 3 */}
                     <div
-                        className="border-b border-gray-900/10 pb-12 grid grid-cols-1 sm:grid-cols-2 gap-x-6">
-                        {/* Left Column: Context */}
+                        className="border-b border-gray-900/10 pb-12 grid grid-cols-1 gap-x-6">
+                        {/* Context */}
                         <div>
                             <h2 className="text-base font-semibold text-gray-900">Notifications</h2>
                             <p className="mt-1 text-sm text-gray-600">
@@ -327,43 +328,9 @@ export const ListingForm = () => {
                             </p>
                         </div>
 
-                        {/* Right Column: Input Fields */}
-                        <div className="grid grid-cols-1 gap-y-8">
-                            <fieldset>
-                                <legend className="text-sm font-semibold text-gray-900">By email</legend>
-                                <div className="mt-6 space-y-6">
-                                    <div className="flex items-center gap-x-3">
-                                        <input
-                                            id="comments"
-                                            name="comments"
-                                            type="checkbox"
-                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"/>
-                                        <label htmlFor="comments" className="text-sm font-medium text-gray-900">
-                                            Comments
-                                        </label>
-                                    </div>
-                                    <div className="flex items-center gap-x-3">
-                                        <input
-                                            id="candidates"
-                                            name="candidates"
-                                            type="checkbox"
-                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"/>
-                                        <label htmlFor="candidates" className="text-sm font-medium text-gray-900">
-                                            Candidates
-                                        </label>
-                                    </div>
-                                    <div className="flex items-center gap-x-3">
-                                        <input
-                                            id="offers"
-                                            name="offers"
-                                            type="checkbox"
-                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"/>
-                                        <label htmlFor="offers" className="text-sm font-medium text-gray-900">
-                                            Offers
-                                        </label>
-                                    </div>
-                                </div>
-                            </fieldset>
+                        {/* Input Fields */}
+                        <div className="w-full">
+                           <KeyValueForm />
                         </div>
                     </div>
                 </div>
