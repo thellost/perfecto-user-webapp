@@ -1,0 +1,701 @@
+
+import { NextRequest , NextResponse} from 'next/server';
+import browser from '../puppeteer';
+export async function GET(req, res) {
+    console.log('Request received:', req.method, req.url);
+    if (req.method === 'GET') {
+        try {
+            const url = req
+            .nextUrl
+            .searchParams
+            .get("url");
+            console.log('URL:', url);
+            if (!url || typeof url !== 'string') {
+                return NextResponse.json({ error: 'Invalid or missing URL parameter' }, { status: 400 });
+                return;
+            }
+            // Your logic here
+
+            try {
+                // const browser = await puppeteer.launch({ headless: true });
+                
+            
+                const page = await browser.newPage();
+    await page.goto(url, {
+      timeout: 90000,
+    });
+
+    function toCamelCase(str) {
+      return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
+        if (+match === 0) return '';
+        return index === 0 ? match.toLowerCase() : match.toUpperCase();
+      });
+    }
+
+    function formatDateFromTimestamp(timestamp) {
+      let date = new Date(timestamp);
+
+      let year = date.getFullYear();
+      let month = String(date.getMonth() + 1).padStart(2, '0');
+      let day = String(date.getDate()).padStart(2, '0');
+
+      return `${year}-${month}-${day}`;
+    }
+
+    const infoElement = await page.evaluate(() => {
+      let name = document?.querySelector('.summary__StyledAddress-e4c4ok-8');
+      let urlElement = document?.querySelector('#media-gallery-hero-image');
+      let url = urlElement ? urlElement?.getAttribute('src') : null;
+      const price =
+        document?.querySelector('.summary__StyledSummaryDetailUnit-sc-e4c4ok-4').querySelector('.textIntent-title2')?.innerText || null;
+      let priceClean = price?.replace(/[$,]/g, '')?.replace(/\s*Price/, '');
+      const address = document?.querySelector(
+        '.summary__StyledAddressSubtitle-e4c4ok-9',
+      )?.innerText;
+      const text = document?.querySelector(
+        '.data-table__TableStyledTd-ibnf7p-1',
+      )?.innerText;
+      let comingSoon = false;
+      if (text === 'Coming Soon') {
+        comingSoon = true;
+      }
+      const location = document?.querySelectorAll('ul.cx-breadcrumbs li');
+      const city = location[2]?.querySelector('a')?.innerText || null;
+      const postalCode = location[3]?.querySelector('a')?.innerText || null;
+      const region = location[4]?.querySelector('a')?.innerText || null;
+      const state = location[1]?.querySelector('a')?.innerText || null;
+      name = name?.innerText;
+      
+      return {
+        name,
+        image: url,
+        price: Number(priceClean),
+        address,
+        postalCode,
+        city,
+        region,
+        state,
+        comingSoon,
+      };
+    });
+
+    const result = await page.evaluate(() => {
+      return window.__PARTIAL_INITIAL_DATA__;
+    });
+
+    const baths = result?.props?.listingRelation?.listing?.size?.bathrooms || 0;
+    const beds = result?.props?.listingRelation?.listing?.size?.bedrooms || 0;
+    const sqft = result?.props?.listingRelation?.listing?.size?.squareFeet || 0;
+    const result3 =
+      result?.props?.listingRelation?.listing?.detailedInfo?.keyDetails;
+    const MapObject = new Map();
+    for (let i = 0; i < result3?.length; i++) {
+      let key = toCamelCase(result3[i]?.key)?.replace(/[^a-zA-Z]/g, '');
+      let value = result3[i]?.value;
+      MapObject.set(key, value);
+    }
+    const propertyListingDetails = Object.fromEntries(MapObject);
+
+    const latitude =
+      result?.props?.listingRelation?.listing?.location?.latitude;
+    const longitude =
+      result?.props?.listingRelation?.listing?.location?.longitude;
+
+    const description = result?.props?.listingRelation?.listing?.description;
+    const imageUrls = result?.props?.listingRelation?.listing?.media?.map(
+      (img) => img?.originalUrl,
+    );
+
+    const schools = await page.evaluate(() => {
+      const data = document.querySelectorAll(
+        '.sc-evHTmi.jKTZGQ table.cx-react-table tbody .cx-react-tr',
+      );
+      let schoolArr = [];
+      data.forEach((element) => {
+        const innerData = element?.querySelectorAll('.cx-react-td');
+        const ratingElement = innerData[0]?.querySelector('.sc-fnhnaa span');
+        const nameElement = innerData[1]?.querySelector(
+          '.sc-jWoPvc a.cx-textLink',
+        );
+        const typeElement = innerData[2]?.querySelector('span');
+        const gradesElement = innerData[3];
+        const distanceElement =
+          innerData[4]?.querySelector('.sc-lkMDMP.icvjYO');
+
+        if (
+          ratingElement &&
+          nameElement &&
+          typeElement &&
+          gradesElement &&
+          distanceElement
+        ) {
+          const rating = ratingElement.innerHTML;
+          const name = nameElement.innerHTML;
+          const type = typeElement.innerHTML;
+          const grades = gradesElement.innerHTML;
+          const splitText = grades.split(' ');
+          const gradesFrom = splitText[0];
+          const gradesTo = splitText[2];
+          const distance = distanceElement.innerHTML.split(' ')[0];
+
+          schoolArr.push({
+            rating,
+            name,
+            type,
+            gradesFrom,
+            gradesTo,
+            distance,
+          });
+        } else {
+          console.error('One or more required elements not found');
+        }
+      });
+
+      return schoolArr;
+    });
+
+    const result4 =
+      result?.props?.listingRelation?.listing?.detailedInfo?.amenities;
+    const MapObject2 = new Map();
+    for (let i = 0; i < result4?.length; i++) {
+      let key = toCamelCase(result4[i])?.replace(/[^a-zA-Z]/g, '');
+      let value = result4[i];
+      MapObject2.set(key, value);
+    }
+    const amenities = Object.fromEntries(MapObject2);
+
+    const buildingInfo = await page.evaluate(() => {
+      const data = document?.querySelectorAll(
+        'div[data-tn="listing-page-building-info-building-info-wrapper"] span.building-info__BuildingInfoLineItem-sc-85jvb8-1.ggYXgK',
+      );
+
+      function toCamelCase(str) {
+        return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
+          if (+match === 0) return '';
+          return index === 0 ? match.toLowerCase() : match.toUpperCase();
+        });
+      }
+      const buildingInfoMap = new Map();
+      data.forEach((element) => {
+        const key = element?.querySelector(
+          'span[data-tn="uc-listing-buildingInfo"]',
+        ).innerHTML;
+        const value = element?.querySelector('strong')?.innerHTML;
+        buildingInfoMap.set(toCamelCase(key), value);
+      });
+      const buildingInfoObject = Object.fromEntries(buildingInfoMap);
+      return buildingInfoObject;
+    });
+
+    const homeFacts = await page.evaluate(() => {
+      const data = document?.querySelectorAll(
+        'div[data-tn="uc-listing-assessorInfo-homeFacts"] div.category-table__TableWrapper-sc-18hdii3-0.kXAGKf span.jbxvLV',
+      );
+      function toCamelCase(str) {
+        return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
+          if (+match === 0) return '';
+          return index === 0 ? match.toLowerCase() : match.toUpperCase();
+        });
+      }
+      const homeFactsInfoMap = new Map();
+      data.forEach((element) => {
+        const key = element?.querySelector('span').innerHTML;
+        let value = element?.querySelector('strong').innerHTML;
+        value = value.replace(/[,\bSq. Ft.]/g, '');
+        homeFactsInfoMap.set(toCamelCase(key), value);
+      });
+      const homeFactsInfoObject = Object?.fromEntries(homeFactsInfoMap);
+      return homeFactsInfoObject;
+    });
+
+    const publicRecords = await page.evaluate(() => {
+      function toCamelCase(str) {
+        return str?.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
+          if (+match === 0) return '';
+          return index === 0 ? match.toLowerCase() : match.toUpperCase();
+        });
+      }
+      const data = document?.querySelectorAll(
+        'div#publicFacts div.public-facts__TaxInfoWrapper-sc-19n5r74-0.biERKw div.public-facts-subsection__PublicFactsSubsection-ee1xld-1',
+      );
+      if (data == undefined) {
+        return null;
+      }
+      let records = {};
+      let dataMap = new Map();
+      const title = toCamelCase(data[0]?.querySelector('strong')?.innerHTML);
+      const data2 = data[0]?.querySelectorAll(
+        'span.public-facts__TaxableValueItem-sc-19n5r74-1.dCnYGl',
+      );
+      let dataMap2 = new Map();
+      data2?.forEach((element) => {
+        const key = toCamelCase(element?.querySelector('span')?.innerText);
+        const value = element?.querySelector('strong')?.innerText;
+        dataMap2.set(key, value);
+      });
+      const dataObject2 = Object.fromEntries(dataMap2);
+      records[title] = dataObject2;
+
+      for (let i = 1; i < data?.length; i++) {
+        const title = toCamelCase(data[i]?.querySelector('strong')?.innerHTML);
+        const data3 = data[i]?.querySelectorAll('span');
+        let dataMap3 = new Map();
+        data3?.forEach((element) => {
+          const key = toCamelCase(element?.querySelector('span')?.innerText);
+          const value = element?.querySelector('strong')?.innerText;
+          dataMap3.set(key, value);
+        });
+        const dataObject3 = Object.fromEntries(dataMap3);
+        records[title] = dataObject3;
+      }
+      return records;
+    });
+
+    const homeForSale = await page.evaluate(() => {
+      let categories = [];
+      const title = document?.querySelector(
+        'div#nearbySearchWrapper h2.uc-nearbySearch-title',
+      )?.innerHTML;
+      const data = document?.querySelectorAll(
+        'div#nearbySearchWrapper div.uc-nearbySearch-container',
+      );
+      data.forEach((element) => {
+        const data1 = element?.querySelectorAll('div.uc-nearbySearch-column');
+        let links = [];
+        data1.forEach((e) => {
+          const name = e?.querySelector('h2.textIntent-title2')?.innerHTML;
+          const item = e?.querySelectorAll('ul li');
+          item.forEach((e2) => {
+            const ans = e2.querySelector('a')?.innerHTML;
+            links.push(ans);
+          });
+          links = Array.from(links);
+          categories.push({ name, links });
+        });
+      });
+      const disclaimer = document?.querySelector(
+        '.disclaimer__StyledDisclaimer-tsc1ui-1',
+      )?.innerHTML;
+      return { title, categories, disclaimer };
+    });
+
+    let ans = result?.props?.listingRelation?.listing.history;
+    let propertyHistory = [];
+    for (let i = 0; i < ans?.length; i++) {
+      let price = ans[i]?.price;
+      let eventAndSource =
+        ans[i]?.localizedStatus +
+        ' ' +
+        ans[i]?.source?.sourceDisplayName +
+        ' ' +
+        ans[i]?.source?.externalSourceId;
+      let date = formatDateFromTimestamp(ans[i]?.timestamp);
+      propertyHistory.push({
+        price,
+        eventAndSource,
+        date,
+        appreciation: 0.0,
+      });
+    }
+
+    let recordsArr = {};
+    console.log('recordsArr');
+    let dataMap = new Map();
+    let ans1 =
+      result?.props?.listingRelation?.listing?.detailedInfo?.listingDetails;
+    console.log('ans1', ans1);
+    for (let i = 0; i < ans1?.length; i++) {
+      let data = ans1[i]?.subCategories;
+      console.log('data', data);
+      let records = {};
+      let records3 = {};
+      
+      for (let k = 0; k < ans1[i]?.subCategories.length; k++) {
+        let records2 = {};
+        for (let j = 0; j < ans1[i]?.subCategories[k]?.fields.length; j++) {
+          records2[
+            toCamelCase(
+              ans1[i]?.subCategories[k]?.fields[j]?.key?.replace(/[\s/]/g, ''),
+            )
+          ] = ans1[i]?.subCategories[k]?.fields[j]?.values[0];
+        }
+        
+        let midKey = toCamelCase(
+          ans1[i]?.subCategories[k]?.name?.replace(/[\s/]/g, ''),
+        );
+        records3[midKey] = records2;
+
+      }
+      
+      console.log('records3', records3);
+      recordsArr[toCamelCase(ans1[i]?.name?.replace(/[\s/]/g, ''))] = records3;
+    }
+
+    //await browser.close();
+    const listing = {
+      name: infoElement.name,
+      image: infoElement.image,
+      price: infoElement.price,
+      address: infoElement.address,
+      postalCode: infoElement.postalCode,
+      city: infoElement.city,
+      region: infoElement.region,
+      state: infoElement.state,
+      comingSoon: infoElement.comingSoon,
+      description: description,
+      baths,
+      beds,
+      sqft,
+      schools,
+      amenities,
+      buildingInfo,
+      homeFacts,
+      publicRecords,
+      propertyHistory,
+      propertyListingDetails,
+      latitude: latitude,
+      longitude: longitude,
+      homeForSale: homeForSale,
+      propertyInformation: recordsArr,
+      propertyImages: imageUrls,
+    };
+    console.log('listing', listing);
+            
+                return NextResponse.json(listing, { status: 200 });
+              } catch (error) {
+                console.error('Error scraping the page:', error);
+                return NextResponse.json({ error: 'Failed to scrape the page' }, { status: 500 });
+              }
+
+
+            return NextResponse.json({ message: 'GET request successful' }, { status: 200 });
+        } catch (error) {
+            console.error(error);
+            return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        }
+    } else {
+        return NextResponse.json({ error: `Method ${req.method} Not Allowed` }, { status: 405 });
+    }
+}
+
+
+/* example of json response if succesfully retrieve it
+{
+    "image": "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_0_47e84/origin.webp",
+    "price": 368000,
+    "postalCode": null,
+    "city": null,
+    "region": null,
+    "state": null,
+    "comingSoon": false,
+    "description": "Newer complex, large 1br apartment with open floor plan with hardwoodfloors. Newer kitchen with granite countertops,high ceilings central air,bright and sunny,washer and dryer in unit with 1 parking space. Nyc transportation in front of building,walk distance to shoppings.",
+    "baths": 1,
+    "beds": 1,
+    "sqft": 0,
+    "schools": [],
+    "amenities": {
+        "basement": "Basement",
+        "dryer": "Dryer"
+    },
+    "buildingInfo": {},
+    "homeFacts": {},
+    "publicRecords": {
+        "undefined": {}
+    },
+    "propertyHistory": [
+        {
+            "price": 368000,
+            "eventAndSource": "Listed (Active) NJMLS 25004067",
+            "date": "2025-02-06",
+            "appreciation": 0
+        }
+    ],
+    "propertyListingDetails": {
+        "status": "Active - Active",
+        "mLS": "25004067",
+        "daysOnMarket": "88",
+        "taxes": "$6,934 / year",
+        "hOAFees": "$547 / month",
+        "condoCoOpFees": "-",
+        "compassType": "Condo",
+        "mLSType": "Residential / Condominium",
+        "yearBuilt": "-",
+        "county": "Bergen County"
+    },
+    "latitude": 40.8199305,
+    "longitude": -73.9884572,
+    "homeForSale": {
+        "categories": [
+            {
+                "links": [
+                    "Bulls Ferry",
+                    "Woodcliff",
+                    "Kensington",
+                    "Ridgefield Heights",
+                    "Bergenline",
+                    "Racetrack",
+                    "Transfer Station",
+                    "Bergenwood",
+                    "Morsemere",
+                    "Upper Manhattan",
+                    "Morningside Heights",
+                    "Hamilton Heights",
+                    "Harlem",
+                    "Manhattanville",
+                    "Upper West Side",
+                    "Manhattan Valley",
+                    "Washington Heights",
+                    "South Harlem",
+                    "Coytesville",
+                    "Lincoln Square",
+                    "Ridgefield",
+                    "North Bergen",
+                    "Fort Lee",
+                    "Fairview",
+                    "Edgewater",
+                    "Cliffside Park",
+                    "Palisades Park",
+                    "New York",
+                    "Manhattan",
+                    "Guttenberg",
+                    "Leonia",
+                    "West New York",
+                    "Ridgefield Park",
+                    "Carlstadt",
+                    "Little Ferry",
+                    "Secaucus",
+                    "Teaneck",
+                    "Weehawken",
+                    "Union City",
+                    "Englewood"
+                ]
+            },
+            {
+                "links": [
+                    "Bulls Ferry",
+                    "Woodcliff",
+                    "Kensington",
+                    "Ridgefield Heights",
+                    "Bergenline",
+                    "Racetrack",
+                    "Transfer Station",
+                    "Bergenwood",
+                    "Morsemere",
+                    "Upper Manhattan",
+                    "Morningside Heights",
+                    "Hamilton Heights",
+                    "Harlem",
+                    "Manhattanville",
+                    "Upper West Side",
+                    "Manhattan Valley",
+                    "Washington Heights",
+                    "South Harlem",
+                    "Coytesville",
+                    "Lincoln Square",
+                    "Ridgefield",
+                    "North Bergen",
+                    "Fort Lee",
+                    "Fairview",
+                    "Edgewater",
+                    "Cliffside Park",
+                    "Palisades Park",
+                    "New York",
+                    "Manhattan",
+                    "Guttenberg",
+                    "Leonia",
+                    "West New York",
+                    "Ridgefield Park",
+                    "Carlstadt",
+                    "Little Ferry",
+                    "Secaucus",
+                    "Teaneck",
+                    "Weehawken",
+                    "Union City",
+                    "Englewood",
+                    "07657",
+                    "07022",
+                    "07024",
+                    "07047",
+                    "07020",
+                    "07650",
+                    "10025",
+                    "10027",
+                    "10031",
+                    "10024",
+                    "07093",
+                    "10032",
+                    "10115",
+                    "07605",
+                    "10069",
+                    "07660",
+                    "10026",
+                    "10030",
+                    "10023",
+                    "10019"
+                ]
+            },
+            {
+                "links": [
+                    "Bulls Ferry",
+                    "Woodcliff",
+                    "Kensington",
+                    "Ridgefield Heights",
+                    "Bergenline",
+                    "Racetrack",
+                    "Transfer Station",
+                    "Bergenwood",
+                    "Morsemere",
+                    "Upper Manhattan",
+                    "Morningside Heights",
+                    "Hamilton Heights",
+                    "Harlem",
+                    "Manhattanville",
+                    "Upper West Side",
+                    "Manhattan Valley",
+                    "Washington Heights",
+                    "South Harlem",
+                    "Coytesville",
+                    "Lincoln Square",
+                    "Ridgefield",
+                    "North Bergen",
+                    "Fort Lee",
+                    "Fairview",
+                    "Edgewater",
+                    "Cliffside Park",
+                    "Palisades Park",
+                    "New York",
+                    "Manhattan",
+                    "Guttenberg",
+                    "Leonia",
+                    "West New York",
+                    "Ridgefield Park",
+                    "Carlstadt",
+                    "Little Ferry",
+                    "Secaucus",
+                    "Teaneck",
+                    "Weehawken",
+                    "Union City",
+                    "Englewood",
+                    "07657",
+                    "07022",
+                    "07024",
+                    "07047",
+                    "07020",
+                    "07650",
+                    "10025",
+                    "10027",
+                    "10031",
+                    "10024",
+                    "07093",
+                    "10032",
+                    "10115",
+                    "07605",
+                    "10069",
+                    "07660",
+                    "10026",
+                    "10030",
+                    "10023",
+                    "10019"
+                ]
+            }
+        ]
+    },
+    "propertyInformation": {
+        "keyDetails": {
+            "keyDetails": {
+                "style": "Condominium",
+                "substyle": "Midrise",
+                "waterfront": "None"
+            }
+        },
+        "summary": {
+            "locationandGeneralInformation": {
+                "areaname": "Cliffside Park",
+                "buildingcomplex": "Fairmont Condo Association",
+                "floodplain": "None",
+                "streetName": "Edgewater",
+                "countyName": "BERGEN",
+                "status": "Active",
+                "streetNumberNumeric": "180",
+                "zipCode": "07010"
+            },
+            "taxesandHOAInformation": {
+                "otherCharges": "True",
+                "maintenenceCharges": "$547.00",
+                "maintenenceIncludes": "Common Area",
+                "tax": "$6,934"
+            },
+            "owner": {
+                "ownership": "Private"
+            }
+        },
+        "property": {
+            "lotInformation": {
+                "unitNo": "1A",
+                "yearBuilt": "2000's",
+                "viewsexposure": "None"
+            },
+            "propertyandAssessments": {
+                "photoNumber": "15",
+                "courtAppYN": "No"
+            },
+            "utilities": {
+                "heatcool": "Electric",
+                "coolingType": "Electric"
+            }
+        },
+        "interiorandExteriorFeatures": {
+            "interiorFeatures": {
+                "bedrooms": "1",
+                "bathsfull": "1",
+                "bathspartial": "0",
+                "basement": "Unfinished",
+                "laundry": "In Unit",
+                "lifestyle": "Close/Parks",
+                "fullBathsTotal": "1",
+                "numofBaths": "1.0"
+            },
+            "exteriorFeatures": {
+                "fireplace": "None",
+                "buildingAmenities": "Elevator",
+                "miscellaneous": "None"
+            }
+        },
+        "agent": {
+            "saleandListingInformation": {
+                "itemsIncluded": "Dishwasher,Microwave,Ov/Rg/Gas,Refrigerator,Washer/Dryer",
+                "managementPhone": "(201) 417-7780",
+                "searchClass": "CCT",
+                "listPrice": "$368,000.00",
+                "listingDate": "02-06-2025",
+                "statusDate": "02-05-2025"
+            },
+            "showingInformation": {
+                "internetRemarks": "NEWER COMPLEX, LARGE 1BR APARTMENT WITH OPEN FLOOR PLAN WITH HARDWOODFLOORS. NEWER KITCHEN WITH GRANITE COUNTERTOPS,HIGH CEILINGS CENTRAL AIR,BRIGHT AND SUNNY,WASHER AND DRYER IN UNIT WITH 1 PARKING SPACE. NYC TRANSPORTATION IN FRONT OF BUILDING,WALK DISTANCE TO SHOPPINGS."
+            }
+        },
+        "rental": {
+            "rentalInformation": {
+                "pets": "None"
+            }
+        }
+    },
+    "propertyImages": [
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_0_47e84/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_1_4be07/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_2_6a623/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_3_06af5/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_4_3b253/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_5_e5dfe/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_6_14f41/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_7_9c5be/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_8_0814f/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_9_73bd6/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_10_4ecb3/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_11_480c7/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_12_551ce/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_13_f667c/origin.jpg",
+        "https://www.compass.com/m/5ab9135176e98293b27c6dfcea9c3cb8c30b9300_img_14_2b231/origin.jpg"
+    ]
+}
+     */
