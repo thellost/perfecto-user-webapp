@@ -136,34 +136,23 @@ function formatKey(key: string): string {
     .replace(/^\w/, c => c.toUpperCase())
     .trim();
 }
-
 export function convertToCompassFormat(keyValuePair: keyValuePair) {
   const result: Record<string, any> = {};
 
   keyValuePair.forEach((grandParent) => {
     // Convert formatted key back to original format
     const grandParentKey = grandParent.key
-      .toLowerCase()
-      .replace(/\s+/g, '') // Remove spaces
-      .replace(/^\w/, c => c.toLowerCase()); // Ensure first letter is lowercase
-
     result[grandParentKey] = {};
 
     grandParent.parents.forEach((parent) => {
       // Convert formatted parent key back to original format
       const parentKey = parent.key
-        .toLowerCase()
-        .replace(/\s+/g, '')
-        .replace(/^\w/, c => c.toLowerCase());
 
       result[grandParentKey][parentKey] = {};
 
       // Convert key-value pairs
       parent.pairs.forEach((pair) => {
         const key = pair.key
-          .toLowerCase()
-          .replace(/\s+/g, '')
-          .replace(/^\w/, c => c.toLowerCase());
 
         result[grandParentKey][parentKey][key] = pair.value;
       });

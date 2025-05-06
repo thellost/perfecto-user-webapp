@@ -628,7 +628,7 @@ const PropertyDetails = () => {
                     Building Information for {name}
                 </h3>
                 <div className="grid sm:grid-cols-4 grid-cols-2 sm:gap-8">
-                    {Object
+                    {buildingInfo && Object
                         .entries(buildingInfo)
                         .map(([
                             title, value
@@ -826,7 +826,7 @@ const PropertyDetails = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {schools
+                            {schools && schools
                                 .slice(0, visibleSchools)
                                 .map((school , index) => (
                                     <tr key={index} className="border-t">

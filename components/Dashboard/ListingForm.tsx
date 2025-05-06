@@ -13,6 +13,7 @@ import { AmenitiesSuggestionList } from "@/data/suggestion_data";
 import  ImageUploader  from "../FileUploader/ImageUploader";
 import KeyValueForm from "../KeyValue/PropertyInformation";
 import { keyValuePair } from "../KeyValue/PropertyInformation";
+import { useSession } from "next-auth/react";
 
 // Add this type definition at the top of the file
 type ListingData = {
@@ -42,6 +43,7 @@ type ListingData = {
 };
 
 export const ListingForm = () => {
+  const { data: session } = useSession();
 
     //define the MaxTags
 
@@ -53,9 +55,43 @@ export const ListingForm = () => {
 
     // Handle form submission
 
-    const handleSubmit = () => {
-        // Send tags to the backend
-        console.log(tags);
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      if (!session) {
+        toast.error('Please login to create a listing');
+        return;
+      }
+    
+      const formData: ListingData = {
+        // Basic Information
+        name: addressRef.current?.value || "",
+        price: Number(price.current?.value) || 0,
+        address: addressRef.current?.value || "",
+        beds: Number(bedNumberRef.current?.value) || 0,
+        baths: Number(bathNumberRef.current?.value) || 0,
+        sqft: Number(totalFinishedSqft.current?.value) || 0,
+        
+        // Location Information
+        latitude: location.lat,
+        longitude: location.lng,
+        
+        // Description
+        description: descriptionRef.current?.value || "",
+        
+        // Home Facts
+        homeFacts: {
+          yearBuilt: yearBuilt.current?.value,
+          lotSize: lotsize.current?.value,
+          apn: apn.current?.value,
+          totalFinishedSqFt: totalFinishedSqft.current?.value,
+          aboveGradeFinishedSqFt: aboveGradeFinishedSqft.current?.value,
+          stories: stories.current?.value,
+        },
+        
+        // Amenities from tags
+        amenities: tags,
+        
         // Property Information from KeyValueForm
         propertyInformation: convertToCompassFormat(propertyInformation),
         
@@ -66,22 +102,30 @@ export const ListingForm = () => {
       // Log the collected data
       console.log("Submitting listing data:", formData);
     
-      // Here you can add your API call to save the data
-      // For example:
-      // try {
-      //   const response = await fetch('/api/listings', {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify(formData),
-      //   });
-      //   if (response.ok) {
-      //     toast.success('Listing created successfully!');
-      //   }
-      // } catch (error) {
-      //   toast.error('Failed to create listing');
-      // }
+      try {
+        const response = await fetch('/api/crud/createListing', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+            // NextAuth automatically handles the Authorization header
+          },
+          body: JSON.stringify(formData)
+        });
+  
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Failed to create listing');
+        }
+  
+        const result = await response.json();
+        toast.success('Listing created successfully!');
+        // Optional: Redirect to the new listing
+        // router.push(`/listings/${result.listingId}`);
+  
+      } catch (error) {
+        console.error('Error:', error);
+        toast.error(error instanceof Error ? error.message : 'Failed to create listing');
+      }
     };
     const ReactTags = require('react-tag-input').WithOutContext;
     const [location,
@@ -120,7 +164,6 @@ export const ListingForm = () => {
     const postalRef = useRef<HTMLInputElement>(null);
     const bathNumberRef = useRef<HTMLInputElement>(null);
     const bedNumberRef = useRef<HTMLInputElement>(null);
-    const sqft = useRef<HTMLInputElement>(null);
     const yearBuilt = useRef<HTMLInputElement>(null);
     const descriptionRef = useRef<HTMLTextAreaElement>(null);
     const lotsize = useRef<HTMLInputElement>(null);
@@ -147,7 +190,6 @@ export const ListingForm = () => {
                 
             if (bedNumberRef.current && scrapedData.bedNumber) bedNumberRef.current.value = scrapedData.beds;
             if (bathNumberRef.current && scrapedData.bathNumber) bathNumberRef.current.value = scrapedData.baths;
-            if (sqft.current && scrapedData.sqft) sqft.current.value = scrapedData.sqft;
             if (yearBuilt.current && scrapedData.yearBuilt) yearBuilt.current.value = scrapedData.homeFacts.yearBuilt;
             if (descriptionRef.current && scrapedData.description) descriptionRef.current.value = scrapedData.description;
             if (lotsize.current && scrapedData.lotsize) lotsize.current.value = scrapedData.homeFacts.lotsize;
@@ -409,14 +451,16 @@ export const ListingForm = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <label htmlFor="stories" className="block text-sm font-medium text-gray-900">
+                                        <label
+                                            htmlFor="stories"
+                                            className="block text-sm font-medium text-gray-900 sm:col-span-3">
                                             Stories
                                         </label>
                                         <div className="mt-2">
                                             <input
                                                 type="number"
-                                                name="Stories"
-                                                id="Stories"
+                                                name="stories"
+                                                id="stories"
                                                 ref={stories}
                                                 defaultValue={scrapedData?.homeFacts?.stories || ""}
                                                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
