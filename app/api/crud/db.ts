@@ -168,3 +168,21 @@ export async function fetchReferredPersonsFromDatabase(referralCode: string) {
       throw error;
   }
 }
+
+
+export async function addProperty(property: Record<string, any>) {
+    try {
+        const command = new PutCommand({
+            TableName: "properties",
+            Item: {
+                ...property,
+            },
+        });
+
+        const response = await client.send(command);
+        return response;
+    } catch (error) {
+        console.error("Error adding property:", error);
+        throw error;
+    }
+}

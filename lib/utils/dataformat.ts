@@ -137,6 +137,42 @@ function formatKey(key: string): string {
     .trim();
 }
 
+export function convertToCompassFormat(keyValuePair: keyValuePair) {
+  const result: Record<string, any> = {};
+
+  keyValuePair.forEach((grandParent) => {
+    // Convert formatted key back to original format
+    const grandParentKey = grandParent.key
+      .toLowerCase()
+      .replace(/\s+/g, '') // Remove spaces
+      .replace(/^\w/, c => c.toLowerCase()); // Ensure first letter is lowercase
+
+    result[grandParentKey] = {};
+
+    grandParent.parents.forEach((parent) => {
+      // Convert formatted parent key back to original format
+      const parentKey = parent.key
+        .toLowerCase()
+        .replace(/\s+/g, '')
+        .replace(/^\w/, c => c.toLowerCase());
+
+      result[grandParentKey][parentKey] = {};
+
+      // Convert key-value pairs
+      parent.pairs.forEach((pair) => {
+        const key = pair.key
+          .toLowerCase()
+          .replace(/\s+/g, '')
+          .replace(/^\w/, c => c.toLowerCase());
+
+        result[grandParentKey][parentKey][key] = pair.value;
+      });
+    });
+  });
+
+  return result;
+}
+
 // Example usage:
 /*
 const formattedData = convertCompassFormat(compass_format);
@@ -158,4 +194,19 @@ const formattedData = convertCompassFormat(compass_format);
   },
   // ... other sections follow the same pattern
 ]
+
+const keyValueData = convertCompassFormat(compass_format);
+const backToCompass = convertToCompassFormat(keyValueData);
+
+// Result will be in the original compass_format structure:
+{
+  "keyDetails": {
+    "keyDetails": {
+      "style": "Condominium",
+      "substyle": "Midrise",
+      "waterfront": "None"
+    }
+  },
+  // ... other sections
+}
 */

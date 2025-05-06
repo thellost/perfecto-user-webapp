@@ -49,7 +49,7 @@ export async function GET(req, res) {
       const price =
         document?.querySelector('.summary__StyledSummaryDetailUnit-sc-e4c4ok-4').querySelector('.textIntent-title2')?.innerText || null;
       let priceClean = price?.replace(/[$,]/g, '')?.replace(/\s*Price/, '');
-      const address =  document?.querySelector('.summary__StyledAddressSubtitle-sc-e4c4ok-9')?.innerText || "" + document?.querySelector(
+      const address =  document?.querySelector('.summary__StyledAddressSubtitle-sc-e4c4ok-9')?.innerText + " " + document?.querySelector(
         '.summary__StyledAddress-sc-e4c4ok-8',
       )?.innerText ;
       
@@ -167,7 +167,7 @@ export async function GET(req, res) {
 
     const buildingInfo = await page.evaluate(() => {
       const data = document?.querySelectorAll(
-        'div[data-tn="listing-page-building-info-building-info-wrapper"] span.building-info__BuildingInfoLineItem-sc-85jvb8-1.ggYXgK',
+        'div[data-tn="listing-page-building-info-building-info-wrapper"] span.building-info__BuildingInfoLineItem-sc-nk4hvp-1.gifpOF',
       );
 
       function toCamelCase(str) {
@@ -190,7 +190,7 @@ export async function GET(req, res) {
 
     const homeFacts = await page.evaluate(() => {
       const data = document?.querySelectorAll(
-        'div[data-tn="uc-listing-assessorInfo-homeFacts"] div.category-table__TableWrapper-sc-18hdii3-0.kXAGKf span.jbxvLV',
+        'div[data-tn="uc-listing-assessorInfo-homeFacts"] div.category-table__TableWrapper-sc-18hdii3-0.ihdWzU span.jxFuJy',
       );
       function toCamelCase(str) {
         return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {

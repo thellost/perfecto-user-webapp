@@ -1,10 +1,10 @@
 "use client";
 
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef, use} from "react";
 import {FiArrowUpRight, FiDollarSign, FiMoreHorizontal} from "react-icons/fi";
 import {FaRegCheckCircle} from "react-icons/fa";
 import {RxCrossCircled} from "react-icons/rx";
-import { convertCompassFormat } from "@/lib/utils/dataformat";
+import { convertCompassFormat, convertToCompassFormat } from "@/lib/utils/dataformat";
 import { toast } from "react-toastify";
 import Map from "../ClusterMap/Map";
 import {TagField} from "../TagInput/TagField";
@@ -13,6 +13,34 @@ import { AmenitiesSuggestionList } from "@/data/suggestion_data";
 import  ImageUploader  from "../FileUploader/ImageUploader";
 import KeyValueForm from "../KeyValue/PropertyInformation";
 import { keyValuePair } from "../KeyValue/PropertyInformation";
+
+// Add this type definition at the top of the file
+type ListingData = {
+  name?: string;
+  image?: string;
+  price?: number;
+  address?: string;
+  beds?: number;
+  baths?: number;
+  sqft?: number;
+  schools?: any;
+  propertyListingDetails?: any;
+  amenities?: string[];
+  homeFacts?: {
+    yearBuilt?: string;
+    lotSize?: string;
+    apn?: string;
+    totalFinishedSqFt?: string;
+    aboveGradeFinishedSqFt?: string;
+    stories?: string;
+  };
+  latitude?: number;
+  longitude?: number;
+  description?: string;
+  propertyInformation?: any;
+  propertyImages?: string[];
+};
+
 export const ListingForm = () => {
 
     //define the MaxTags
@@ -28,6 +56,32 @@ export const ListingForm = () => {
     const handleSubmit = () => {
         // Send tags to the backend
         console.log(tags);
+        // Property Information from KeyValueForm
+        propertyInformation: convertToCompassFormat(propertyInformation),
+        
+        // Images
+        propertyImages: ImageList.map((image) => image.url),
+      };
+    
+      // Log the collected data
+      console.log("Submitting listing data:", formData);
+    
+      // Here you can add your API call to save the data
+      // For example:
+      // try {
+      //   const response = await fetch('/api/listings', {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify(formData),
+      //   });
+      //   if (response.ok) {
+      //     toast.success('Listing created successfully!');
+      //   }
+      // } catch (error) {
+      //   toast.error('Failed to create listing');
+      // }
     };
     const ReactTags = require('react-tag-input').WithOutContext;
     const [location,
@@ -69,6 +123,12 @@ export const ListingForm = () => {
     const sqft = useRef<HTMLInputElement>(null);
     const yearBuilt = useRef<HTMLInputElement>(null);
     const descriptionRef = useRef<HTMLTextAreaElement>(null);
+    const lotsize = useRef<HTMLInputElement>(null);
+    const apn = useRef<HTMLInputElement>(null);
+    const totalFinishedSqft = useRef<HTMLInputElement>(null);
+    const aboveGradeFinishedSqft = useRef<HTMLInputElement>(null);
+    const stories = useRef<HTMLInputElement>(null);
+    const price = useRef<HTMLInputElement>(null);
 
     // When scrapedData changes, update the form fields
     useEffect(() => {
@@ -88,10 +148,14 @@ export const ListingForm = () => {
             if (bedNumberRef.current && scrapedData.bedNumber) bedNumberRef.current.value = scrapedData.beds;
             if (bathNumberRef.current && scrapedData.bathNumber) bathNumberRef.current.value = scrapedData.baths;
             if (sqft.current && scrapedData.sqft) sqft.current.value = scrapedData.sqft;
-            if (yearBuilt.current && scrapedData.yearBuilt) yearBuilt.current.value = scrapedData.PropertyListingDetails.yearBuilt;
+            if (yearBuilt.current && scrapedData.yearBuilt) yearBuilt.current.value = scrapedData.homeFacts.yearBuilt;
             if (descriptionRef.current && scrapedData.description) descriptionRef.current.value = scrapedData.description;
-
-
+            if (lotsize.current && scrapedData.lotsize) lotsize.current.value = scrapedData.homeFacts.lotsize;
+            if (apn.current && scrapedData.apn) apn.current.value = scrapedData.homeFacts.apn;
+            if(totalFinishedSqft.current && scrapedData.totalFinishedSqft) totalFinishedSqft.current.value = scrapedData.homeFacts.totalFinishedSqFt;
+            if(aboveGradeFinishedSqft.current && scrapedData.aboveGradeFinishedSqft) aboveGradeFinishedSqft.current.value = scrapedData.homeFacts.aboveGradeFinishedSqFt;
+            if (stories.current && scrapedData.stories) stories.current.value = scrapedData.homeFacts.stories;
+            if (price.current && scrapedData.price) price.current.value = scrapedData.price;
             };
             
             // You can update more fields as needed
@@ -122,17 +186,16 @@ export const ListingForm = () => {
     //// key value pair
     
     return (
-        <div className="flex flex-col col-span-full md:flex-row gap-6">
+        <div className="flex flex-col col-span-full w-full md:flex-row gap-6">
             {/* Main Form */}
             <div className="flex-1 col-span-10 p-4 rounded border border-stone-300">
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className="space-y-12">
                         {/* Section 1 */}
                         <div
                             className="border-b border-gray-900/10 pb-12 grid grid-cols-1 sm:grid-cols-12 gap-x-8">
                             {/* Left Column: Context */}
-                            <div className="sm:col-span-4">
-                                <h2 className="text-base font-semibold text-gray-900">Address Details</h2>
+                            <div className="sm:col-span-3">
                                 <p className="mt-1 text-sm text-gray-600">
                                     This information will be displayed publicly so be careful what you share.
                                     <br/>
@@ -141,7 +204,7 @@ export const ListingForm = () => {
                             </div>
 
                             {/* Right Column: Input Fields */}
-                            <div className="grid grid-cols-6 gap-y-8 gap-x-3 sm:col-span-8">
+                            <div className="grid grid-cols-6 gap-y-8 gap-x-3 sm:col-span-9">
                                 <div className="sm:col-span-6">
                                     <label htmlFor="address" className="block text-sm font-medium text-gray-900">
                                         Address
@@ -299,7 +362,7 @@ export const ListingForm = () => {
                         <div
                             className="border-b border-gray-900/10 pb-12 grid grid-cols-1 sm:grid-cols-12 gap-x-8">
                             {/* Left Column: Context */}
-                            <div className="sm:col-span-4">
+                            <div className="sm:col-span-3">
                                 <h2 className="text-base font-semibold text-gray-900">Home Facts</h2>
                                 <p className="mt-1 text-sm text-gray-600">
                                     This information will be displayed publicly so be careful what you share.
@@ -309,7 +372,7 @@ export const ListingForm = () => {
                             </div>
 
                             {/* Right Column: Input Fields */}
-                            <div className="grid grid-cols-6 gap-y-8 gap-x-3 sm:col-span-8">
+                            <div className="grid grid-cols-6 gap-y-8 gap-x-3 sm:col-span-9">
                                 <div className="grid grid-cols-3  gap-x-4 col-span-6">
                                     <div>
                                         <label htmlFor="bedrooms" className="block text-sm font-medium text-gray-900">
@@ -354,6 +417,8 @@ export const ListingForm = () => {
                                                 type="number"
                                                 name="Stories"
                                                 id="Stories"
+                                                ref={stories}
+                                                defaultValue={scrapedData?.homeFacts?.stories || ""}
                                                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
                                                 placeholder="0"
                                                 min="0"/>
@@ -386,20 +451,117 @@ export const ListingForm = () => {
                                         </svg>
                                     </div>
                                 </div>
-                                <div className="sm:col-span-6"> 
-                                <label htmlFor="stories" className="block text-sm font-medium text-gray-900">
-                                            Amenities
-                                        </label>
+                                <div className="sm:col-span-6">
+                                    <label htmlFor="year-built" className="block text-sm font-medium text-gray-900">
+                                        Year Built
+                                    </label>
                                     <div className="mt-2">
-                                    <TagField
+                                        <input
+                                            type="number"
+                                            name="year-built"
+                                            id="year-built"
+                                            ref={yearBuilt}
+                                            defaultValue={scrapedData?.homeFacts?.yearBuilt || ""}
+                                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+                                            placeholder="0"
+                                            min="0"/>
+                                    </div>
+                                </div>
+                                <div className="sm:col-span-6 grid grid-cols-3 gap-x-4">
+                                    <div>
+                                        <label htmlFor="total-finished-sqft" className="block text-sm font-medium text-gray-900">
+                                            Total Finished SqFt
+                                        </label>
+                                        <div className="mt-2">
+                                            <input
+                                                type="number"
+                                                name="total-finished-sqft"
+                                                id="total-finished-sqft"
+                                                ref={totalFinishedSqft}
+                                                defaultValue={scrapedData?.homeFacts?.totalFinishedSqFt || ""}
+                                                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+                                                placeholder="0"
+                                                min="0"/>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="above-grade-finished-sqft" className="block text-sm font-medium text-gray-900">
+                                            Above Grade Finished SqFt
+                                        </label>
+                                        <div className="mt-2">
+                                            <input
+                                                type="number"
+                                                name="above-grade-finished-sqft"
+                                                id="above-grade-finished-sqft"
+                                                ref={aboveGradeFinishedSqft}
+                                                defaultValue={scrapedData?.homeFacts?.aboveGradeFinishedSqFt || ""}
+                                                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+                                                placeholder="0"
+                                                min="0"/>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="lot-size" className="block text-sm font-medium text-gray-900">
+                                            Lot Size
+                                        </label>
+                                        <div className="mt-2">
+                                            <input
+                                                type="number"
+                                                name="lot-size"
+                                                id="lot-size"
+                                                ref={lotsize}
+                                                defaultValue={scrapedData?.homeFacts?.lotSize || ""}
+                                                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+                                                placeholder="0"
+                                                min="0"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="sm:col-span-6">
+                                    <label htmlFor="apn" className="block text-sm font-medium text-gray-900">
+                                        APN
+                                    </label>
+                                    <div className="mt-2">
+                                        <input
+                                            type="text"
+                                            name="apn"
+                                            id="apn"
+                                            ref={apn}
+                                            defaultValue={scrapedData?.homeFacts?.aPN || ""}
+                                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+                                            placeholder="Enter APN"/>
+                                    </div>
+                                </div>
+                                <div className="sm:col-span-6">
+                                    <label htmlFor="price" className="block text-sm font-medium text-gray-900">
+                                        Price (USD)
+                                    </label>
+                                    <div className="mt-2">
+                                        <input
+                                            type="number"
+                                            name="price"
+                                            id="price"
+                                            ref={price}
+                                            defaultValue={scrapedData?.price || ""}
+                                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+                                            placeholder="Enter price in USD"
+                                            min="0"/>
+                                    </div>
+                                </div>
+                                <div className="sm:col-span-6">
+                                    <label htmlFor="amenities" className="block text-sm font-medium text-gray-900">
+                                        Amenities
+                                    </label>
+                                    <div className="mt-2">
+                                        <TagField
                                             tags={tags}
                                             addTag={handleAddTag}
                                             removeTag={handleRemoveTag}
-                                            maxTags={MAX_TAGS} 
-                                            suggestions={AmenitiesSuggestionList}/>
-                                        </div>
+                                            maxTags={MAX_TAGS}
+                                            suggestions={AmenitiesSuggestionList}
+                                        />
+                                    </div>
                                 </div>
-
                             </div>
                         </div>
 
@@ -418,9 +580,9 @@ export const ListingForm = () => {
 
                             {/* Right Column: Input Fields */}
                             <div className="grid grid-cols-6 gap-y-8 gap-x-3 sm:col-span-8">
-                            <div className="sm:col-span-full">
-                                <ImageUploader defaultValue={ImageList} onValueChange ={setImageList}/>
-                            </div>
+                                <div className="sm:col-span-full">
+                                    <ImageUploader defaultValue={ImageList} onValueChange ={setImageList}/>
+                                </div>
                             </div>
                         </div>
 
@@ -438,8 +600,7 @@ export const ListingForm = () => {
 
                             {/* Input Fields */}
                             <div className="w-full">
-                              
-                            <KeyValueForm defaultValue={propertyInformation} />
+                                <KeyValueForm defaultValue={propertyInformation} />
                             </div>
                         </div>
                     </div>
@@ -458,7 +619,7 @@ export const ListingForm = () => {
             </div>
 
             {/* Scrape Card */}
-            <div className="w-full md:w-96 p-4 rounded border border-stone-300 bg-gray-50 h-fit">
+            <div className="w-full c md:w-96 p-4 rounded border border-stone-300 bg-gray-50 h-fit">
                 <h2 className="text-lg font-semibold text-gray-900">Scrape Listing Data</h2>
                 <p className="mt-1 text-sm text-gray-600">
                     Enter a URL from <strong>compass.com</strong> to scrape listing data and apply it to the form.
@@ -490,4 +651,3 @@ export const ListingForm = () => {
         </div>
     );
 };
-
