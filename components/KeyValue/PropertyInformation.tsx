@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-type keyValuePair = {
+export type keyValuePair = {
   key: string;
   parents: {
     key: string;
@@ -14,38 +14,36 @@ const KeyValueForm = ({
   grandParentSuggestion = ["Category", "Type", "Group"],
   parentSuggestion = ["Feature", "HOA", "Location", "Amenities"],
   childSuggestion = ["name", "email", "phone", "address", "city"],
-  defaultValue = [
-    {
-      key: "Category",
-      parents: [
-        {
-          key: "Feature",
-          pairs: [
-            { key: "name", value: "John Doe" },
-            { key: "email", value: "john.doe@example.com" },
-          ],
-        },
-        {
-          key: "Location",
-          pairs: [
-            { key: "city", value: "New York" },
-            { key: "address", value: "123 Main St" },
-          ],
-        },
-      ],
-    },
-  ],
+  defaultValue 
 }: {
   title?: string;
   grandParentSuggestion?: string[];
   parentSuggestion?: string[];
   childSuggestion?: string[];
-  defaultValue?: keyValuePair;
+  defaultValue: keyValuePair;
 }) => {
+
+  useEffect(() => {
+    setNestedKeyValuePairs(defaultValue);
+
+    setShowGrandParentSuggestions(defaultValue.map(() => false));
+    setShowParentSuggestions(
+      defaultValue.map((grandParent) =>
+        grandParent.parents.map(() => false)
+      )
+    );
+    setShowChildSuggestions(
+      defaultValue.map((grandParent) =>
+        grandParent.parents.map((parent) =>
+          parent.pairs.map(() => false)
+        )
+      )
+    );
+  }, [defaultValue]);
   const [nestedKeyValuePairs, setNestedKeyValuePairs] = useState<keyValuePair>(defaultValue);
 
   const [showGrandParentSuggestions, setShowGrandParentSuggestions] = useState<boolean[]>(
-    defaultValue.map(() => false)
+    nestedKeyValuePairs.map(() => false)
   );
   const [showParentSuggestions, setShowParentSuggestions] = useState<boolean[][]>(
     defaultValue.map((grandParent) =>
@@ -158,12 +156,8 @@ const KeyValueForm = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitted Nested Key-Value Pairs:", nestedKeyValuePairs);
     alert("Nested Key-Value Pairs Submitted!");
   };
-  console.log("Nested Key-Value Pairs:", nestedKeyValuePairs);
-  console.log("showGrandParentSuggestions:", showGrandParentSuggestions);
-  console.log("showParentSuggestions:", showParentSuggestions);
   
   return (
     <div className=" p-6 rounded w-full">

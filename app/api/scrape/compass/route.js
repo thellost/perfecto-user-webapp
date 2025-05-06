@@ -49,9 +49,10 @@ export async function GET(req, res) {
       const price =
         document?.querySelector('.summary__StyledSummaryDetailUnit-sc-e4c4ok-4').querySelector('.textIntent-title2')?.innerText || null;
       let priceClean = price?.replace(/[$,]/g, '')?.replace(/\s*Price/, '');
-      const address = document?.querySelector(
-        '.summary__StyledAddressSubtitle-e4c4ok-9',
-      )?.innerText;
+      const address =  document?.querySelector('.summary__StyledAddressSubtitle-sc-e4c4ok-9')?.innerText || "" + document?.querySelector(
+        '.summary__StyledAddress-sc-e4c4ok-8',
+      )?.innerText ;
+      
       const text = document?.querySelector(
         '.data-table__TableStyledTd-ibnf7p-1',
       )?.innerText;

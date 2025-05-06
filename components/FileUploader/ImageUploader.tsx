@@ -1,15 +1,20 @@
 "use client";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import Image from "next/image";
 
 // Actions
 import { UploadImage } from "../../app/api/crud/s3";
+import { useEffect } from "react";
 interface dataType {
     url: string;
     name?: string;
 }
-const ImageUploader = ( {defaultValue} : {defaultValue: dataType[]} ) => {
+const ImageUploader = ( {defaultValue, onValueChange} : {defaultValue: dataType[], onValueChange: Dispatch<SetStateAction<dataType[]>>
+} ) => {
+  useEffect(() => {
+    setUploadedImageList(defaultValue);
+  }, [defaultValue]);
   // State
   const [uploadedImageList, setUploadedImageList] = useState<dataType[]>(defaultValue); // Image list state
   const [images, setImages] = useState<ImageListType>([]);
@@ -41,18 +46,18 @@ const ImageUploader = ( {defaultValue} : {defaultValue: dataType[]} ) => {
           // Call the server action function
           const data = await UploadImage(formData);
           image["fvr-url"] = data.location; // Add the uploaded image URL to the image object
-          console.log(data);
         } catch (error) {
           console.error("Error uploading image:", error);
         }
       }
       updatedImageList.push({url: image["fvr-url"], name: image.file ? image.file.name : undefined}); // Add the new image to the list
     }
+
     setUploadedImageList(updatedImageList); // Update the uploaded image list
     setImages([]); // Update the state with all images
     setLoading(false); // Stop loading
+    onValueChange(updatedImageList); // Call the onValueChange function with the updated list
   };
-
   return (
     <div>
       <ImageUploading
@@ -121,6 +126,7 @@ const ImageUploader = ( {defaultValue} : {defaultValue: dataType[]} ) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {uploadedImageList.map((image, i) => (
                   <div
+                  
                     key={i}
                     className={`relative cursor-pointer group rounded-md overflow-hidden`}
                   >

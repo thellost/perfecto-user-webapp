@@ -1,3 +1,4 @@
+import { set } from "lodash";
 import React, { useState } from "react";
 
 const useTagInput = (maxTags = 5) => {
@@ -9,9 +10,15 @@ const useTagInput = (maxTags = 5) => {
 
   const handleAddTag = (newTag: string) => {
     if (newTag && !tags.includes(newTag) && tags.length < maxTags) {
-      setTags([...tags, newTag]);
+      console.log("Adding tag:", newTag); // Debugging line
+      console.log("Current tags:", tags); // Debugging line
+      setTags([...tags, newTag]); // Debugging line
     }
   };
+
+  function changeTags (newTags: string[])  {
+    setTags(newTags);
+  }
 
   // Function to remove tag from array
   const handleRemoveTag = (tag: string) =>
@@ -19,7 +26,7 @@ const useTagInput = (maxTags = 5) => {
 
   // Return tags and functions from the hook
 
-  return { tags, handleAddTag, handleRemoveTag };
+  return { tags, handleAddTag, handleRemoveTag, changeTags };
 };
 
 export default useTagInput;

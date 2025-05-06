@@ -17,13 +17,25 @@ const defaultOptions = {
 
 type Props = {
   properties : Properties[],
+  defaultLocation? : {
+    lat: number,
+    lng: number,}
   onBoundsChanged : any,
 }
-const ClusterMap = ({properties, onBoundsChanged}:Props) => {
-  const [mapCenter, setMapCenter] = useState({
-    lat: 37.7749,
-    lng: -122.4194,
-  });
+const ClusterMap = ({properties, defaultLocation = {
+  lat: 37.7749,
+  lng: -122.4194,
+ }, onBoundsChanged, }:Props) => {
+
+  useEffect(() => {
+    if (defaultLocation) {
+      setMapCenter(defaultLocation);
+      if (mapRef.current) {
+        mapRef.current.setCenter(defaultLocation);
+      }
+    }
+  }, [defaultLocation]);
+  const [mapCenter, setMapCenter] = useState(defaultLocation);
   const [selectedProperty, setSelectedProperty] = useState<Properties>();
   const mapRef = useRef<google.maps.Map>(null);
   const markerClustererRef = useRef<MarkerClusterer>(null);

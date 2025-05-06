@@ -30,6 +30,12 @@ const Map = ({parent_latitude = 37.7749, parent_longitude = -122.4194, onLocatio
         region: "es",
         outputFormat: OutputFormat.XML
     });
+
+    useEffect(() => {
+        setLatitude(parent_latitude);
+        setLongitude(parent_longitude);
+        setDefaultCenter({ lat: parent_latitude, lng: parent_longitude });
+    }, [parent_latitude, parent_longitude]);
     const [latitude,
         setLatitude] = useState(parent_latitude);
     const [longitude,

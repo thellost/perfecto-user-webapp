@@ -38,7 +38,7 @@ export const TagField = ({ tags, addTag, removeTag, maxTags, suggestions }: iTag
 
       if (
         userInput.trim() !== "" &&
-        userInput.length <= 12 &&
+        userInput.length <= 90 &&
         tags.length < maxTags
       ) {
         addTag(userInput);
