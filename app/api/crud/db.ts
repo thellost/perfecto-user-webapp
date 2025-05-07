@@ -187,13 +187,13 @@ export async function addProperty(property: Record<string, any>) {
     }
 }
 
-
-export async function logErrorToDatabase(error: Error) {
+export async function logErrorToDatabase(error: Error, apiName: string) {
     try {
         const command = new PutCommand({
             TableName: "logs",
             Item: {
-                logid: crypto.randomUUID(),
+                logId: crypto.randomUUID(),
+                apiName: apiName,
                 message: error.message,
                 stack: error.stack,
                 created_at: new Date().toISOString(),
