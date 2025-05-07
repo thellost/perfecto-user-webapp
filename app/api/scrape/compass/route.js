@@ -1,11 +1,11 @@
 
 import { NextRequest , NextResponse} from 'next/server';
 import { logErrorToDatabase, logToDatabase } from '../../crud/db';
-export async function GET(req:NextRequest) {
+export async function GET(req) {
 
     console.log('Request received:', req.method, req.url);
     logToDatabase(req);
-    return NextResponse.json({ message: logToDatabase(req)}, { status: 200 });
+    return NextResponse.json({ message: 'Request received' }, { status: 200 });
     
 }
 
