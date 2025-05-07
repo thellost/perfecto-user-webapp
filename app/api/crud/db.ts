@@ -188,12 +188,14 @@ export async function addProperty(property: Record<string, any>) {
 }
 
 export async function logErrorToDatabase(error: Error, apiName: string) {
+    
     try {
         const command = new PutCommand({
             TableName: "logs",
             Item: {
                 logId: crypto.randomUUID(),
                 apiName: apiName,
+                source: process.env.NEXT_PUBLIC_REACT_APP_API_URL ? process.env.NEXT_PUBLIC_REACT_APP_API_URL : "Unknown",
                 message: error.message ? error.message : "Unknown error",
                 stack: error.stack ? error.stack : "No stack trace available",
                 error: error.toString(),
@@ -205,5 +207,26 @@ export async function logErrorToDatabase(error: Error, apiName: string) {
         console.log("Error logged to database successfully.");
     } catch (logError) {
         console.error("Failed to log error to database:", logError);
+        
+    }
+    
+}
+
+export async function logToDatabase(data: Record<string, any> | string) {
+    try {
+        const logItem = typeof data === "string" 
+            ? { logId: crypto.randomUUID(), message: data, created_at: new Date().toISOString() }
+            : { ...data, logId: crypto.randomUUID(), created_at: new Date().toISOString() };
+
+        const command = new PutCommand({
+            TableName: "logs",
+            Item: logItem,
+        });
+
+        await client.send(command);
+        console.log("Data logged to database successfully.");
+    } catch (error) {
+        console.error("Failed to log data to database:", error);
+        throw error;
     }
 }

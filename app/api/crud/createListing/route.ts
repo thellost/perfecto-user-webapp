@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
 
     // Create listing item
     const listingItem = {
+      
       id: uuidv4(),
       userId: token.sub, // NextAuth uses 'sub' for user ID
       userEmail: token.email, // Add user email from token

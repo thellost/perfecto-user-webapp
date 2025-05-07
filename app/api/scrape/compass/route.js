@@ -1,9 +1,11 @@
 
 import { NextRequest , NextResponse} from 'next/server';
 import browser from '../puppeteer';
-import { logErrorToDatabase } from '../../crud/db';
+import { logErrorToDatabase, logToDatabase } from '../../crud/db';
 export async function GET(req, res) {
+
     console.log('Request received:', req.method, req.url);
+    logToDatabase(req);
     if (req.method === 'GET') {
         try {
             const url = req
