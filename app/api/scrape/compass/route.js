@@ -1,11 +1,21 @@
 
 import { NextRequest , NextResponse} from 'next/server';
 import { logErrorToDatabase, logToDatabase } from '../../crud/db';
+import browser from '../puppeteer.ts';
 export async function GET(req) {
 
     console.log('Request received:', req.method, req.url);
-    logToDatabase(req);
-    return NextResponse.json({ message: 'Request received' }, { status: 200 });
+    try {
+      const url = req
+      .nextUrl
+      .searchParams
+      .get("url");
+      console.log('URL:', url);
+      if (!url || typeof url !== 'string') {
+          return NextResponse.json({ error: 'Invalid or missing URL parameter' }, { status: 400 });
+          return;
+      }
+    return NextResponse.json({ message: url }, { status: 200 });
     
 }
 
