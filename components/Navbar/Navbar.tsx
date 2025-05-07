@@ -311,7 +311,6 @@ const Navbar = (
               Welcome, {user?.user?.name.split(" ")[0]}
             </span>
             </Link>
-            <Link href={"/"}>
             <p
               className={`hover:text-[#f08e80] text-[16px] font-semibold cursor-pointer ${
                 isHome
@@ -322,7 +321,6 @@ const Navbar = (
             >
               Logout{" "}
             </p>
-            </Link>
           </>
         ) : (
           <>
