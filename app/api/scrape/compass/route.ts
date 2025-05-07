@@ -1,8 +1,7 @@
 
 import { NextRequest , NextResponse} from 'next/server';
-import browser from '../puppeteer';
 import { logErrorToDatabase, logToDatabase } from '../../crud/db';
-export async function GET(req, res) {
+export async function GET(req:NextRequest) {
 
     console.log('Request received:', req.method, req.url);
     logToDatabase(req);
