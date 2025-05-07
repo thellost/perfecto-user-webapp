@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from 'uuid';
-import { addProperty } from "../db";
+import { addProperty , logErrorToDatabase} from "../db";
 import { getToken } from "next-auth/jwt";
 
 export async function POST(req: NextRequest) {
@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Error creating listing:', error);
+    logErrorToDatabase(error as Error, "Create Listing"); // Log error to database for debugging
     return NextResponse.json({ 
       error: 'Failed to create listing',
       details: error instanceof Error ? error.message : 'Unknown error'

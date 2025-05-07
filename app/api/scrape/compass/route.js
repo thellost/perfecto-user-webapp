@@ -377,7 +377,7 @@ export async function GET(req, res) {
             console.error(error);
             console.log('Error:', error.message);
             
-            logErrorToDatabase(error.message, 'scrape compass');
+            logErrorToDatabase(error, 'scrape compass');
             return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
         }
     } else {
