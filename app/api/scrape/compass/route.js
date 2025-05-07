@@ -6,6 +6,7 @@ export async function GET(req, res) {
 
     console.log('Request received:', req.method, req.url);
     logToDatabase(req);
+    return NextResponse.json({ message: 'Request received' }, { status: 200 });
     if (req.method === 'GET') {
         try {
             const url = req
