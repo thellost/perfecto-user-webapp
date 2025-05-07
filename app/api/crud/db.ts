@@ -186,3 +186,23 @@ export async function addProperty(property: Record<string, any>) {
         throw error;
     }
 }
+
+
+export async function logErrorToDatabase(error: Error) {
+    try {
+        const command = new PutCommand({
+            TableName: "logs",
+            Item: {
+                logid: crypto.randomUUID(),
+                message: error.message,
+                stack: error.stack,
+                created_at: new Date().toISOString(),
+            },
+        });
+
+        await client.send(command);
+        console.log("Error logged to database successfully.");
+    } catch (logError) {
+        console.error("Failed to log error to database:", logError);
+    }
+}

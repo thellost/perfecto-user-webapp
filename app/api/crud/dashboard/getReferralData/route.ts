@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fetchReferredPersonsFromDatabase } from '../../db';
+import { fetchReferredPersonsFromDatabase, logErrorToDatabase } from '../../db';
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const referral_code = searchParams.get('referral_code');
@@ -17,7 +17,10 @@ export async function GET(request: Request) {
 
         return NextResponse.json({ referral_code, referredPersons });
     } catch (error) {
+        
+        logErrorToDatabase(error as Error, 'getReferralData');
         return NextResponse.json(
+            
             { error: 'Failed to fetch referred persons', details: (error as Error).message },
             { status: 500 }
         );

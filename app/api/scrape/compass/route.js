@@ -1,6 +1,7 @@
 
 import { NextRequest , NextResponse} from 'next/server';
 import browser from '../puppeteer';
+import { logErrorToDatabase } from '../../crud/db';
 export async function GET(req, res) {
     console.log('Request received:', req.method, req.url);
     if (req.method === 'GET') {
@@ -365,6 +366,8 @@ export async function GET(req, res) {
                 return NextResponse.json(listing, { status: 200 });
               } catch (error) {
                 console.error('Error scraping the page:', error);
+                console.log('Error:', error.message);
+                logErrorToDatabase(error.message, 'scrape compass');
                 return NextResponse.json({ error: 'Failed to scrape the page' }, { status: 500 });
               }
 
@@ -372,9 +375,13 @@ export async function GET(req, res) {
             return NextResponse.json({ message: 'GET request successful' }, { status: 200 });
         } catch (error) {
             console.error(error);
+            console.log('Error:', error.message);
+            
+            logErrorToDatabase(error.message, 'scrape compass');
             return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
         }
     } else {
+        
         return NextResponse.json({ error: `Method ${req.method} Not Allowed` }, { status: 405 });
     }
 }
