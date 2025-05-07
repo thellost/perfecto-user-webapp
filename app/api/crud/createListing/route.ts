@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     // Get and verify token using NextAuth
     const token = await getToken({ req});
-    
+    console.log("Token:", token); // Debugging line to check the token
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
