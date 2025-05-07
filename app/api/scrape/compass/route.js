@@ -1,23 +1,32 @@
 
 import { NextRequest , NextResponse} from 'next/server';
 import { logErrorToDatabase, logToDatabase } from '../../crud/db';
-import browser from '../puppeteer.ts';
+import browser from '../puppeteer';
 export async function GET(req) {
-
-    console.log('Request received:', req.method, req.url);
-    try {
-      const url = req
-      .nextUrl
-      .searchParams
-      .get("url");
-      console.log('URL:', url);
-      if (!url || typeof url !== 'string') {
-          return NextResponse.json({ error: 'Invalid or missing URL parameter' }, { status: 400 });
-          return;
-      }
-    return NextResponse.json({ message: url }, { status: 200 });
-    
+  console.log('Request received:', req.method, req.url);
+  try {
+    const url = req
+    .nextUrl
+    .searchParams
+    .get("url");
+    console.log('URL:', url);
+    if (!url || typeof url !== 'string') {
+        return NextResponse.json({ error: 'Invalid or missing URL parameter' }, { status: 400 });
+      
+ 
+    }
+    return NextResponse.json({ message: url }, { status: 200 })
+  }
+    catch (error) {
+        console.error('Error:', error.message);
+        logErrorToDatabase(error.message, 'scrape compass');
+        return NextResponse.json({ error: 'Failed to scrape the page' }, { status: 500 });
+    }
 }
+
+    
+    
+
 
 
 /* example of json response if succesfully retrieve it
