@@ -194,6 +194,7 @@ export async function logErrorToDatabase(error: Error, apiName: string) {
             TableName: "logs",
             Item: {
                 logId: crypto.randomUUID(),
+                type: "error",
                 apiName: apiName,
                 source: process.env.NEXT_PUBLIC_REACT_APP_API_URL ? process.env.NEXT_PUBLIC_REACT_APP_API_URL : "Unknown",
                 message: error.message ? error.message : "Unknown error",
@@ -215,8 +216,8 @@ export async function logErrorToDatabase(error: Error, apiName: string) {
 export async function logToDatabase(data: Record<string, any> | string) {
     try {
         const logItem = typeof data === "string" 
-            ? { logId: crypto.randomUUID(), message: data, created_at: new Date().toISOString() }
-            : { ...data, logId: crypto.randomUUID(), created_at: new Date().toISOString() };
+            ? { logId: crypto.randomUUID(), type: "normal", message: data, created_at: new Date().toISOString() }
+            : { ...data, logId: crypto.randomUUID(), type: "normal", created_at: new Date().toISOString() };
 
         const command = new PutCommand({
             TableName: "logs",
