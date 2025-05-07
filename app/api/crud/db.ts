@@ -194,8 +194,9 @@ export async function logErrorToDatabase(error: Error, apiName: string) {
             Item: {
                 logId: crypto.randomUUID(),
                 apiName: apiName,
-                message: error.message,
-                stack: error.stack,
+                message: error.message ? error.message : "Unknown error",
+                stack: error.stack ? error.stack : "No stack trace available",
+                error: error.toString(),
                 created_at: new Date().toISOString(),
             },
         });
