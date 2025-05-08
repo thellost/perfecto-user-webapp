@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from 'uuid';
-import { addProperty , logErrorToDatabase} from "../db";
+import { addProperty , logErrorToDatabase, logToDatabase} from "../db";
 import { getToken } from "next-auth/jwt";
 
 export async function POST(req: NextRequest) {
@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
     const token = await getToken({ req});
     console.log("Token:", token); // Debugging line to check the token
     if (!token) {
+      logToDatabase({ message: "Unauthorized access attempt Token " + token, token: null }); // Log unauthorized access
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
