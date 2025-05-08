@@ -6,8 +6,9 @@ import { getToken } from "next-auth/jwt";
 export async function POST(req: NextRequest) {
   try {
     // Get and verify token using NextAuth
-    const token = await getToken({ req});
-    console.log("Token:", token); // Debugging line to check the token
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    console.log("Token:", token);
+    console.log("Should remove only for testing :" , process.env.NEXTAUTH_SECRET ) // Debugging line to check the token
     if (!token) {
       logToDatabase({ message: "Unauthorized access attempt Token " + token, token: null }); // Log unauthorized access
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
