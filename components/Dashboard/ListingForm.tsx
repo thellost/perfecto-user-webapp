@@ -1,9 +1,6 @@
 "use client";
 
 import React, {useState, useEffect, useRef, use} from "react";
-import {FiArrowUpRight, FiDollarSign, FiMoreHorizontal} from "react-icons/fi";
-import {FaRegCheckCircle} from "react-icons/fa";
-import {RxCrossCircled} from "react-icons/rx";
 import { convertCompassFormat, convertToCompassFormat } from "@/lib/utils/dataformat";
 import { toast } from "react-toastify";
 import Map from "../ClusterMap/Map";
@@ -132,6 +129,7 @@ export const ListingForm = () => {
         setLocation] = useState({lat: 37.7749, lng: -122.4194});
     const [scrapeUrl, setScrapeUrl] = useState<string>("");
     const [scrapedData, setScrapedData] = useState<any>(null);
+    const [isScraping, setIsScraping] = useState(false);
     const [ImageList, setImageList] = useState<{
         url: string;
         name?: string;
@@ -208,6 +206,7 @@ export const ListingForm = () => {
             toast.error("Please enter a valid URL.");
             return;
         }
+        setIsScraping(true);
         try {
             const response = await fetch(`/api/scrape/compass?url=${encodeURIComponent(scrapeUrl)}`);
             if (!response.ok) throw new Error("Failed to fetch data from the scrape API.");
@@ -217,9 +216,12 @@ export const ListingForm = () => {
               setPropertyInformation(convertCompassFormat(data.propertyInformation));
               console.log("Property Information:", propertyInformation);
             }
+            
+            setIsScraping(false);
             toast.success("Data successfully scraped and applied to the form!");
         } catch (error) {
           console.log(error);
+          setIsScraping(false);
             toast.error("Failed to scrape data. Please try again.");
         }
     };
@@ -686,9 +688,14 @@ export const ListingForm = () => {
                     <button
                         type="button"
                         onClick={handleScrape}
-                        className="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        disabled={isScraping}
+                        className={`w-full rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm ${
+                            isScraping
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        }`}
                     >
-                        Scrape Data
+                        {isScraping ? "Scraping..." : "Scrape Data"}
                     </button>
                 </div>
             </div>

@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/Button/Button.jsx", "app/provider.js", "components/GoogleMaps/index.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/Button/Button.jsx", "app/provider.js", "components/GoogleMaps/index.jsx", "app/api/scrape/puppeteer.js", "app/api/scrape/compass/route.js", "app/api/scrape/compass/route.js", "app/api/scrape/compass/route.js", "app/api/scrape/compass/route.js"],
   "exclude": ["node_modules"]
 }
