@@ -2,41 +2,66 @@ import React, { useState } from "react";
 import Input from "../Input/Input";
 import Button from "../Button/Button";
 import axios from "axios";
-
-const AgentFrom = () => {
+import { toast } from "react-toastify";
+const AgentForm = ({propertyId} : {propertyId: string} ) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    description: "",
+    message: "",
+    PerfectoPartneredLender: false,
   });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked; // Only defined for checkboxes
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
     const payload = {
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
-      description: formData.message,
+      message: formData.message,
+      propertyId: propertyId,
+      prequalification: formData.PerfectoPartneredLender || false,
+      status: "pending",
     };
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/contact`,
-        payload
-      );
-      console.log("Form submitted successfully", response.data);
+      const response = await fetch('/api/crud/addContact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
+      }
+
+      // Reset form after successful submission
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+        PerfectoPartneredLender: false
+      });
+
+      // Show success message
+      toast.success('Thank you for your message. We will contact you soon!');
+      
     } catch (error) {
       console.error("Error submitting form:", error);
+      toast.error('Failed to submit form. Please try again.');
     }
   };
 
@@ -84,7 +109,7 @@ const AgentFrom = () => {
         <input
           type="checkbox"
           name="prequalification"
-          checked={formData.prequalification}
+          checked={formData.PerfectoPartneredLender}
           onChange={handleChange}
           className="mr-2 leading-tight"
         />
@@ -100,9 +125,9 @@ const AgentFrom = () => {
         Message/data rates may apply. Accepting this consent is not required to
         obtain real estate service. 
       </div>
-      <Button className="w-full" placeholder="Send Message" variant="blue" />
+      <Button className="w-full" placeholder="Send Message" variant="blue" onClick={undefined} children={undefined} />
     </form>
   );
 };
 
-export default AgentFrom;
+export default AgentForm;

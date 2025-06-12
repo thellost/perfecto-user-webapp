@@ -5,6 +5,7 @@ import { getToken } from "next-auth/jwt";
 
 export async function POST(req: NextRequest) {
   try {
+    /*
     // Get and verify token using NextAuth
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     console.log("Token:", token);
@@ -13,16 +14,24 @@ export async function POST(req: NextRequest) {
       logToDatabase({ message: "Unauthorized access attempt Token " + token, token: null }); // Log unauthorized access
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
+      */
+    // Extract userId from query parameters
+    
     // Get request body
     const listingData = await req.json();
+
+    const { searchParams } = new URL(req.url);
+    const userEmail = listingData.userEmail || searchParams.get("userEmail") || null; // Get user email from request body or query parameters
+    if (!userEmail) {
+      return NextResponse.json({ error: 'User Email is required' }, { status: 400 });
+    }
 
     // Create listing item
     const listingItem = {
       
       id: uuidv4(),
-      userId: token.sub, // NextAuth uses 'sub' for user ID
-      userEmail: token.email, // Add user email from token
+      userEmail: userEmail, // NextAuth uses 'sub' for user ID
+      //userEmail: token.email, // Add user email from token
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       ...listingData

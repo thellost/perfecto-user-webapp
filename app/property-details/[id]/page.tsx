@@ -19,6 +19,7 @@ import axios, { AxiosError } from "axios";
 import {getCookie} from "../../../utils/helper_async";
 import {FaPen} from "react-icons/fa";
 import LoanModal from "../../../components/Modal/LoanModal";
+import OfferingModal from '@/components/Modal/OfferingModal';
 import Footer from "../../../components/Footer/Footer";
 import 'chart.js/auto';
 import {
@@ -593,7 +594,12 @@ const PropertyDetails = () => {
 
                     </div>
                     <div className="mt-4">
-                        <AgentFrom/>
+                        <AgentFrom propertyId={id} />
+                    </div>
+                    <div>
+                        <OfferingModal propertyId={id} defaultPrice={price} defaultTerm={30}>
+
+                        </OfferingModal>
                     </div>
                 </div>
             </div>

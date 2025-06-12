@@ -43,8 +43,8 @@ const list: list_item[]  = [
   },
   {
     
-    path:"/user-finance",
-    title : "Finance",
+    path:"/offerings",
+    title : "Offerings",
     Icon : FiLink
   },
 ]

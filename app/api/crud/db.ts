@@ -1,6 +1,6 @@
 import { User } from "@/app/types/DefaultType"
 import {DynamoDB, DynamoDBClientConfig} from "@aws-sdk/client-dynamodb"
-import {DynamoDBDocument, GetCommand, ScanCommand, PutCommand, QueryCommand, QueryCommandOutput, UpdateCommand} from "@aws-sdk/lib-dynamodb"
+import {DynamoDBDocument, GetCommand, ScanCommand, PutCommand, QueryCommand, QueryCommandOutput, UpdateCommand, DeleteCommand} from "@aws-sdk/lib-dynamodb"
 import bcrypt from "bcrypt"
 
 const adaptor_config : DynamoDBClientConfig = {
@@ -228,6 +228,163 @@ export async function logToDatabase(data: Record<string, any> | string) {
         console.log("Data logged to database successfully.");
     } catch (error) {
         console.error("Failed to log data to database:", error);
+        throw error;
+    }
+}
+
+export async function deletePropertyById(id: string) {
+    try {
+        const command = new DeleteCommand({
+            TableName: "properties",
+            Key: {
+                id: id,
+            },
+        });
+
+        const response = await client.send(command);
+        console.log("Property deleted successfully.");
+        return response;
+    } catch (error) {
+        console.error("Error deleting property:", error);
+        throw error;
+    }
+}
+
+
+export async function getPropertiesByEmail(email: string) {
+    try {
+        const command = new QueryCommand({
+            TableName: "properties",
+            IndexName: "userEmail-index", // Updated with the correct secondary index name
+            KeyConditionExpression: "userEmail = :email",
+            ExpressionAttributeValues: {
+                ":email": email,
+            },
+        });
+
+        const response = await client.send(command);
+        return response.Items;
+    } catch (error) {
+        console.error("Error fetching properties by email:", error);
+        throw error;
+    }
+}
+
+export async function addContactFormEntry(data: { phone: string; [key: string]: any }) {
+    try {
+        const command = new PutCommand({
+            TableName: "contact_form",
+            Item: {
+                ...data,
+                created_at: new Date().toISOString(),
+            },
+        });
+
+        const response = await client.send(command);
+        console.log("Contact form entry added successfully.");
+        return response;
+    } catch (error) {
+        console.error("Error adding contact form entry:", error);
+        throw error;
+    }
+}
+
+export async function addOffering(data: { offering_id: string; user_email: string; property_id: string; [key: string]: any }) {
+    try {
+        const command = new PutCommand({
+            TableName: "offerings",
+            Item: {
+                ...data,
+                created_at: new Date().toISOString(),
+            },
+        });
+
+        const response = await client.send(command);
+        console.log("Offering data added successfully.");
+        return response;
+    } catch (error) {
+        console.error("Error adding offering data:", error);
+        throw error;
+    }
+}
+
+
+export async function getUserIdByEmail(email: string) {
+    try {
+        const command = new QueryCommand({
+            TableName: "users",
+            KeyConditionExpression: "email = :email",
+            ExpressionAttributeValues: {
+                ":email": email.toLowerCase(),
+            },
+        });
+
+        const response = await client.send(command);
+        const user = response.Items?.[0];
+        if (!user) {
+            throw new Error("User not found");
+        }
+        return user.id;
+    } catch (error) {
+        console.error("Error fetching user ID by email:", error);
+        throw error;
+    }
+}
+
+
+export async function getOfferingsByPropertyIds(propertyIds: string[]) {
+    try {
+        console.log("Fetching offerings for property IDs:", propertyIds);
+        const offerings = [];
+        for (const propertyId of propertyIds) {
+            const command = new QueryCommand({
+                TableName: "offerings",
+                IndexName: "property_id-index", // Ensure the correct secondary index is used
+                KeyConditionExpression: "property_id = :propertyId",
+                ExpressionAttributeValues: {
+                    ":propertyId": propertyId,
+                },
+            });
+
+            const response = await client.send(command);
+            if (response.Items) {
+                offerings.push(...response.Items);
+            }
+        }
+        return offerings;
+    } catch (error) {
+        console.error("Error fetching offerings by property IDs:", error);
+        throw error;
+    }
+}
+
+export async function updateOfferingById(offering_id: string, property_id: string, updateData: Record<string, any>) {
+    try {
+        const updateExpressions: string[] = [];
+        const expressionAttributeNames: Record<string, string> = {};
+        const expressionAttributeValues: Record<string, any> = {};
+
+        for (const key in updateData) {
+            updateExpressions.push(`#${key} = :${key}`);
+            expressionAttributeNames[`#${key}`] = key;
+            expressionAttributeValues[`:${key}`] = updateData[key];
+        }
+        const command = new UpdateCommand({
+            TableName: "offerings",
+            Key: { 
+            offering_id, 
+            property_id
+            },
+            UpdateExpression: `SET ${updateExpressions.join(", ")}`,
+            ExpressionAttributeNames: expressionAttributeNames,
+            ExpressionAttributeValues: expressionAttributeValues,
+            ReturnValues: "ALL_NEW",
+        });
+
+        const response = await client.send(command);
+        return response.Attributes;
+    } catch (error) {
+        console.error("Error updating offering:", error);
         throw error;
     }
 }

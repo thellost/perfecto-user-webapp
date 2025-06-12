@@ -155,18 +155,18 @@ const PaymentCalculator = ({
         <div className="text-xl font-semibold mb-4 text-right">
           {formatter.format(normalTotalMonthlyPayment)}
         </div>
-        <div className="text-xl font-semibold mb-4 ">
+        <div className="text-xl font-semiboldw ">
           Perfecto Monthly Payment:
         </div>
-        <div className="text-xl font-semibold mb-4 text-right">
+        <div className="text-xl font-semibold text-right">
           {formatter.format(perfectoTotalMonthlyPayment)}
         </div>
       </div>
       <div className="bg-gray-100 text-green-700 px-5 py-5 mt-5 rounded-xl grid grid-cols-2">
-        <div className="text-xl font-semibold mb-4 ">
+        <div className="text-xl font-semibold ">
           Total Saved over 30 Years:
         </div>
-        <div className="text-xl text-green-700 font-semibold mb-4 text-right">
+        <div className="text-xl text-green-700 font-semibold text-right">
           {formatter.format(
             normalTotalMonthlyPayment * term * 12 -
               perfectoTotalMonthlyPayment * term * 12

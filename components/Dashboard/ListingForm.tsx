@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 
 // Add this type definition at the top of the file
 type ListingData = {
+    userEmail?: string;
   name?: string;
   image?: string;
   price?: number;
@@ -59,8 +60,16 @@ export const ListingForm = () => {
         toast.error('Please login to create a listing');
         return;
       }
+
+      if (session.user === undefined || session.user === null || session.user.email === null || session.user.email === undefined || session.user.name === undefined){
+        toast.error('Please login to create a listing');
+        return;
+      }
     
       const formData: ListingData = {
+
+        // User Information
+        userEmail: session.user.email,  
         // Basic Information
         name: addressRef.current?.value || "",
         price: Number(price.current?.value) || 0,
