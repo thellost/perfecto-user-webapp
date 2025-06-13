@@ -26,7 +26,7 @@ export async function POST(
     
   }
   console.log(user_data)
-      await createNewUser(user_data, raw_json.get("referral")?.toString() ?? "")
+      await createNewUser(user_data, referral_code)
       return  new Response ("Done", {
         status: 200
       })

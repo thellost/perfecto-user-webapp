@@ -596,7 +596,7 @@ const PropertyDetails = () => {
                     <div className="mt-4">
                         <AgentFrom propertyId={id} />
                     </div>
-                    <div>
+                    <div className='mt-4'>
                         <OfferingModal propertyId={id} defaultPrice={price} defaultTerm={30}>
 
                         </OfferingModal>

@@ -40,7 +40,6 @@ export async function createNewUser(user : User, referral?: string) {
           ":inputEmail": email
         },
       }));
-    console.log("after get")
     if (user_check.Items?.[0] != undefined ) {
         throw Error("User Already Exist")
     }
@@ -60,7 +59,8 @@ export async function createNewUser(user : User, referral?: string) {
     })
         const response = await client.send(command);
     // Add data to the referral table
-    if (referral_code) {
+    if (referred_by  && referred_by  !== "") {
+        console.log("Adding referral data...")
       const referralCommand = new PutCommand({
           TableName: "referral",
           Item: {
@@ -309,7 +309,7 @@ export async function addOffering(data: { offering_id: string; user_email: strin
 }
 
 
-export async function getUserIdByEmail(email: string) {
+export async function getUserDataByEmail(email: string) {
     try {
         const command = new QueryCommand({
             TableName: "users",
@@ -318,13 +318,16 @@ export async function getUserIdByEmail(email: string) {
                 ":email": email.toLowerCase(),
             },
         });
-
         const response = await client.send(command);
-        const user = response.Items?.[0];
+        if (!response.Items || response.Items.length === 0) {
+            console.error("No user found with the provided email:", email);
+            throw new Error("User not found");
+        }
+        const user = response.Items[0];
         if (!user) {
             throw new Error("User not found");
         }
-        return user.id;
+        return user;
     } catch (error) {
         console.error("Error fetching user ID by email:", error);
         throw error;

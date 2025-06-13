@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from 'uuid';
-import {addOffering, getOfferingsByPropertyIds, getPropertiesByEmail, updateOfferingById} from "../db"; // Adjust the import path as necessary
+import {addOffering, getUserDataByEmail, getOfferingsByPropertyIds, getPropertiesByEmail, updateOfferingById} from "../db"; // Adjust the import path as necessary
 import { getToken } from "next-auth/jwt";
 
 
@@ -67,14 +67,15 @@ export async function GET(req: NextRequest) {
     if (!token.email) {
       return NextResponse.json({ error: 'Invalid token: missing user information' }, { status: 400 });
     }
-    
+    console.log("Token email:", token.email); // Debugging line to check the token email
+    console.log("userId:", await getUserDataByEmail(token.email)); // Debugging line to check the user ID
     const propertyIds = await getPropertiesByEmail(token.email);
     if (!propertyIds || propertyIds.length === 0 || propertyIds === undefined) {
       return NextResponse.json({ 
         message: 'No properties found for the user',
         offerings: []
       }, { status: 200 });
-    } 
+    }
     // Extract property IDs from the propertyIds array
     const propertyIdList = propertyIds.map(property => property.id);
     // Fetch offerings based on user email

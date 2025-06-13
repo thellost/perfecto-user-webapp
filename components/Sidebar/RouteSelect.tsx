@@ -8,54 +8,71 @@ import {
   FiPaperclip,
   FiUsers,
 } from "react-icons/fi";
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useSession } from "next-auth/react";
 
 type list_item = {
-  path:string,
-  title: string,
-  Icon: IconType
+  path: string;
+  title: string;
+  Icon: IconType;
+  roles?: string[]; // Add roles array to specify which roles can see this route
 }
-const list: list_item[]  = [
+
+const list: list_item[] = [
   {
-    path:"/referral-dashboard",
-    title : "Referral Dahsboard",
-    Icon : FiHome
+    path: "/referral-dashboard",
+    title: "Referral Dashboard",
+    Icon: FiHome,
+    roles: ["agent", "admin"] // Only agents and admins can see this
   },
   {
-    
-    path:"/profile",
-    title : "Profile",
-    Icon : FiUsers
+    path: "/profile",
+    title: "Profile",
+    Icon: FiUsers,
+    roles: ["buyer", "agent", "admin"] // All authenticated users can see this
   },
   {
-    
-    path:"/user-listing",
-    title : "Listing",
-    Icon : FiPaperclip
+    path: "/user-listing",
+    title: "Listing",
+    Icon: FiPaperclip,
+    roles: ["agent", "admin"] // Only agents and admins can see listings
   },
   {
-    
-    path:"/user-integrations",
-    title : "Integrations",
-    Icon : FiLink
+    path: "/user-integrations",
+    title: "Integrations",
+    Icon: FiLink,
+    roles: ["agent", "admin"]
   },
   {
-    
-    path:"/offerings",
-    title : "Offerings",
-    Icon : FiLink
+    path: "/offerings",
+    title: "Offerings",
+    Icon: FiLink,
+    roles: ["buyer", "agent", "admin"] // All authenticated users can see offerings
   },
-]
+];
+
 export const RouteSelect = () => {
-  const section_name = usePathname()
-  console.log(section_name)
+  const section_name = usePathname();
+  const { data: session } = useSession();
+  const userRole = session?.roles || "user"; // Default to "user" if no role is set
+
+  // Filter routes based on user role
+  const allowedRoutes = list.filter(route => 
+    !route.roles || route.roles.includes(userRole)
+  );
+
   return (
     <div className="space-y-1">
-      {list.map(function(data, i){
-        return <Route  Icon={data.Icon} selected={data.path == section_name ? true : false} title={data.title} path={data.path} />;
-    })} 
+      {allowedRoutes.map((data, i) => (
+        <Route
+          key={i}
+          Icon={data.Icon}
+          selected={data.path === section_name}
+          title={data.title}
+          path={data.path}
+        />
+      ))}
     </div>
   );
 };

@@ -1,7 +1,15 @@
 import React from 'react';
 
 
-const Button = ({ className, placeholder, variant, onClick, children }) => {
+interface ButtonProps {
+  className?: string;
+  placeholder?: React.ReactNode;
+  variant?: 'white' | string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  children?: React.ReactNode;
+}
+
+const Button: React.FC<ButtonProps> = ({ className, placeholder, variant, onClick, children }) => {
     const baseClasses = 'px-[18px] py-[8px] rounded-[3px] inline-flex items-center cursor-pointer justify-center font-semibold transition-colors';
     const variantClasses = variant === 'white' 
       ? 'bg-white text-[#f08e80] hover:bg-gray-100'

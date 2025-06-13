@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { FiX } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import Button from '../Button/Button';
 
 const calculateMonthlyPayment = (principal: number, annualRate: number, years: number) => {
+  // Only calculate the monthly interest (not principal + interest)
   const monthlyRate = annualRate / 12 / 100;
-  const numberOfPayments = years * 12;
-  const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-  return Math.round(monthlyPayment * 100) / 100;
+  const monthlyInterest = principal * monthlyRate;
+  return Math.round(monthlyInterest * 100) / 100;
 };
 
 interface OfferingModalProps {
@@ -33,11 +34,27 @@ const OfferingModal: React.FC<OfferingModalProps> = ({
     preApproved: false,
     message: '',
   });
-
+  const [interestRate, setInterestRate] = useState(6.5);// Default interest rate
+  // Fetch rates from the API and update state
+    useEffect(() => {
+      const fetchRates = async () => {
+        try {
+          const response = await fetch("/api/crud/checkRates");
+          const data = await response.json();
+          if (data.perfectoHomeRate) {
+            setInterestRate(data.perfectoHomeRate);
+          }
+        } catch (error) {
+          console.error("Error fetching rates:", error);
+        }
+      };
+  
+      fetchRates();
+    }, []);
   const handleContinue = (e: React.FormEvent) => {
     e.preventDefault();
     const principal = offerDetails.offerPrice - offerDetails.downPayment;
-    const monthly = calculateMonthlyPayment(principal, 6.5, offerDetails.loanTerm);
+    const monthly = calculateMonthlyPayment(principal, interestRate, offerDetails.loanTerm);
     setMonthlyPayment(monthly);
     setShowConfirmation(true);
   };
@@ -77,13 +94,18 @@ const OfferingModal: React.FC<OfferingModalProps> = ({
   };
 
   return (
-    <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className={`px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 ${buttonClassName}`}
-      >
+    <div className='max-w-auto mx-auto p-6 border border-gray-300'>
+    <div>
+      <h2 className="text-lg font-semibold mb-4">Make an Offer !</h2>
+      <p className="text-gray-600 mb-6">
+        Not satisfied with the listed price? Enter your own offer details below and negotiate your way to a better deal!
+      </p>
+      
+    <Button onClick={() => setIsOpen(true)}>
+
         Make an Offer
-      </button>
+    </Button>
+    </div>
 
       <Dialog open={isOpen} onClose={handleClose} className="relative z-50">
         {/* Background overlay */}
@@ -243,7 +265,7 @@ const OfferingModal: React.FC<OfferingModalProps> = ({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Interest Rate:</span>
-                      <span className="font-medium">6.5%</span>
+                      <span className="font-medium">{interestRate}%</span>
                     </div>
                     <div className="border-t border-gray-200 pt-2 mt-2">
                       <div className="flex justify-between">
@@ -274,7 +296,7 @@ const OfferingModal: React.FC<OfferingModalProps> = ({
           </Dialog.Panel>
         </div>
       </Dialog>
-    </>
+    </div>
   );
 };
 
