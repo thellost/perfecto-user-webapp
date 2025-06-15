@@ -111,7 +111,6 @@ export async function validate_user(email? : string, role?: string) {
           }));
         }
           
-          console.log(response)
         
         const item = response.Items?.[0]
         if (item === undefined || item === null) {
@@ -160,7 +159,7 @@ export async function fetchReferredPersonsFromDatabase(referralCode: string) {
 
       const response = await client.send(command);
       if (response.Items?.length === 0) {
-          throw new Error("Referral code not found");
+          return null;
       }
       return response.Items;
   } catch (error) {
@@ -337,7 +336,6 @@ export async function getUserDataByEmail(email: string) {
 
 export async function getOfferingsByPropertyIds(propertyIds: string[]) {
     try {
-        console.log("Fetching offerings for property IDs:", propertyIds);
         const offerings = [];
         for (const propertyId of propertyIds) {
             const command = new QueryCommand({
@@ -388,6 +386,25 @@ export async function updateOfferingById(offering_id: string, property_id: strin
         return response.Attributes;
     } catch (error) {
         console.error("Error updating offering:", error);
+        throw error;
+    }
+}
+
+export async function getOfferingsByUserEmail(user_email: string) {
+    try {
+        const command = new QueryCommand({
+            TableName: "offerings",
+            IndexName: "user_email-index", // Ensure this GSI exists in your DynamoDB table
+            KeyConditionExpression: "user_email = :user_email",
+            ExpressionAttributeValues: {
+                ":user_email": user_email,
+            },
+        });
+
+        const response = await client.send(command);
+        return response.Items;
+    } catch (error) {
+        console.error("Error fetching offerings by user_email:", error);
         throw error;
     }
 }

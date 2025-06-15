@@ -3,7 +3,9 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { FiTrash2 } from "react-icons/fi";
+import { FiTrash2, FiFilter } from "react-icons/fi";
+import Link from "next/link";
+import CounterOfferModal from '../Modal/CounterOfferModal';
 
 interface Offering {
   offering_id: string;
@@ -21,6 +23,19 @@ export const OfferingTable = () => {
   const { data: session } = useSession();
   const [offerings, setOfferings] = useState<Offering[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<Offering | null>(null);
+  const [filters, setFilters] = useState({
+    minPrice: '',
+    maxPrice: '',
+    minDownPayment: '',
+    maxDownPayment: '',
+    term: 'all', // 'all', '15', '30'
+  });
+  
+  // Add this to check user role
+  const userRole = session?.roles || "buyer";
+  const isAgent = userRole === "agent" || userRole === "admin";
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -62,6 +77,33 @@ export const OfferingTable = () => {
     }
   };
 
+  const handleAcceptOffer = async (offeringId: string, propertyId: string) => {
+    try {
+      const response = await fetch(`/api/crud/offerings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          offering_id: offeringId,
+          property_id: propertyId,
+          status: 'approved'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to accept offering');
+      }
+
+      toast.success('Offering accepted successfully');
+      // Refresh the offerings list
+      fetchOfferings();
+    } catch (error) {
+      toast.error('Failed to accept offering');
+      console.error('Error:', error);
+    }
+  };
+
   const getStatusStyle = (status: string) => {
     switch (status.toLowerCase()) {
       case 'rejected':
@@ -75,6 +117,77 @@ export const OfferingTable = () => {
     }
   };
 
+  const filteredOfferings = offerings.filter(offering => {
+    const meetsMinPrice = !filters.minPrice || offering.offerPrice >= Number(filters.minPrice);
+    const meetsMaxPrice = !filters.maxPrice || offering.offerPrice <= Number(filters.maxPrice);
+    const meetsMinDown = !filters.minDownPayment || offering.downPayment >= Number(filters.minDownPayment);
+    const meetsMaxDown = !filters.maxDownPayment || offering.downPayment <= Number(filters.maxDownPayment);
+    const meetsTerm = filters.term === 'all' || offering.loanTerm === Number(filters.term);
+
+    return meetsMinPrice && meetsMaxPrice && meetsMinDown && meetsMaxDown && meetsTerm;
+  });
+
+  const FilterSection = () => (
+    <div className="mb-6 p-4 bg-white rounded-lg shadow">
+      <div className="flex items-center gap-2 mb-4">
+        <FiFilter className="text-gray-500" />
+        <h3 className="font-semibold text-gray-700">Filter Offerings</h3>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-gray-700">Price Range</p>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              placeholder="Min"
+              value={filters.minPrice}
+              onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
+              className="w-full px-3 py-2 border rounded-md text-sm"
+            />
+            <input
+              type="number"
+              placeholder="Max"
+              value={filters.maxPrice}
+              onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
+              className="w-full px-3 py-2 border rounded-md text-sm"
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-gray-700">Down Payment Range</p>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              placeholder="Min"
+              value={filters.minDownPayment}
+              onChange={(e) => setFilters({ ...filters, minDownPayment: e.target.value })}
+              className="w-full px-3 py-2 border rounded-md text-sm"
+            />
+            <input
+              type="number"
+              placeholder="Max"
+              value={filters.maxDownPayment}
+              onChange={(e) => setFilters({ ...filters, maxDownPayment: e.target.value })}
+              className="w-full px-3 py-2 border rounded-md text-sm"
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-gray-700">Loan Term</p>
+          <select
+            value={filters.term}
+            onChange={(e) => setFilters({ ...filters, term: e.target.value })}
+            className="w-full px-3 py-2 border rounded-md text-sm"
+          >
+            <option value="all">All Terms</option>
+            <option value="15">15 Years</option>
+            <option value="30">30 Years</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-48">
@@ -85,82 +198,110 @@ export const OfferingTable = () => {
 
   return (
     <div className="overflow-x-auto bg-gray-100 rounded-lg p-4">
+      <FilterSection />
       <table className="min-w-full divide-y divide-gray-300">
         <thead className="bg-gray-200">
             <tr>
-            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Property ID
-            </th>
-            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Buyer Email
-            </th>
-            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Offer Details
-            </th>
-            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Date
-            </th>
-            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
+              <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Property ID
+              </th>
+              <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Buyer Email
+              </th>
+              <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Offer Details
+              </th>
+              <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date
+              </th>
+              {isAgent && (
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              )}
             </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {offerings.length === 0 ? (
+          {filteredOfferings.length === 0 ? (
             <tr>
-              <td colSpan={6} className="px-6 py-8 text-center text-gray-500 bg-white">
-                <p className="text-lg font-medium">No offerings received yet</p>
-                <p className="text-sm mt-1">Offerings for your properties will appear here</p>
+              <td colSpan={isAgent ? 6 : 5} className="px-6 py-8 text-center text-gray-500 bg-white">
+                <p className="text-lg font-medium">No offerings match your filters</p>
+                <p className="text-sm mt-1">Try adjusting your filter criteria</p>
               </td>
             </tr>
           ) : (
-            offerings.map ((offering, index) => (
+            filteredOfferings.map((offering, index) => (
               <tr 
                 key={offering.offering_id} 
                 className={`${
                   index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                 } hover:bg-gray-100 transition-colors duration-150`}
               >
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {offering.property_id.substring(0, 8)}...
+               <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 underline text-center">
+                  <Link href={`/property-details/${offering.property_id}`} target="_blank" rel="noopener noreferrer">
+                    {offering.property_id.substring(0, 8)}...
+                  </Link>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                   {offering.user_email}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <span className={`px-3 py-1 rounded-full font-medium ${getStatusStyle(offering.status)}`}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                  <span className={`px-3 py-1 rounded-full font-medium ${getStatusStyle(offering.status)} inline-block`}>
                     {offering.status.charAt(0).toUpperCase() + offering.status.slice(1)}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                   ${offering.offerPrice.toLocaleString()} • ${offering.downPayment.toLocaleString()} down • {offering.loanTerm} years
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                   {new Date(offering.created_at).toLocaleDateString()}
+                  
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button
-                    onClick={() => {/* Add counter offer logic here */}}
-                    className="text-blue-600 hover:text-blue-900 px-4 py-2 rounded-md hover:bg-blue-50 transition-colors duration-200"
-                  >
-                    Counter Offer
-                  </button>
-                  <button
-                    onClick={() => handleRejectOffer(offering.offering_id, offering.property_id)}
-                    className="ml-2 text-red-600 hover:text-red-900 px-4 py-2 rounded-md hover:bg-red-50 transition-colors duration-200"
-                  >
-                    <FiTrash2 className="inline-block mr-1" />
-                    Reject Offer
-                  </button>
-                </td>
+                {isAgent && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex justify-center gap-2">
+                    <button
+                      onClick={() => handleAcceptOffer(offering.offering_id, offering.property_id)}
+                      className="bg-green-600 text-white hover:bg-green-700 px-4 py-2 rounded-md transition-colors duration-200 cursor-pointer"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedOffer(offering);
+                        setIsCounterModalOpen(true);
+                      }}
+                      className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md transition-colors duration-200 cursor-pointer"
+                    >
+                      Counter Offer
+                    </button>
+                    <button
+                      onClick={() => handleRejectOffer(offering.offering_id, offering.property_id)}
+                      className="bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded-md transition-colors duration-200 cursor-pointer flex items-center"
+                    >
+                      <FiTrash2 className="mr-1" />
+                      Reject
+                    </button>
+                    
+                  </td>
+                )}
               </tr>
             ))
           )}
         </tbody>
       </table>
+      {selectedOffer && (
+        <CounterOfferModal
+          isOpen={isCounterModalOpen}
+          onClose={() => {
+            setIsCounterModalOpen(false);
+            setSelectedOffer(null);
+          }}
+          originalOffer={selectedOffer}
+        />
+      )}
     </div>
   );
 };

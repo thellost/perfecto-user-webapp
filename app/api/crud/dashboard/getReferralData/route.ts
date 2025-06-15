@@ -14,7 +14,9 @@ export async function GET(request: Request) {
         // In a real-world scenario, fetch data from a database here
         // Example:
         const referredPersons = await fetchReferredPersonsFromDatabase(referral_code);
-
+        if (!referredPersons) {
+            return NextResponse.json({ error: 'No referred persons found for this referral code' });
+        }
         return NextResponse.json({ referral_code, referredPersons });
     } catch (error) {
         
