@@ -181,7 +181,10 @@ const OfferingModal: React.FC<OfferingModalProps> = ({
                       className="block w-full rounded-md border border-gray-300 py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500"
                       required
                     >
+                      <option value={5}>5 years</option>
+                      <option value={10}>10 years</option>
                       <option value={15}>15 years</option>
+                      <option value={20}>20 years</option>
                       <option value={30}>30 years</option>
                     </select>
                   </div>

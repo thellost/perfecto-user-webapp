@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { FiX } from 'react-icons/fi';
 import { toast } from 'react-toastify';
@@ -16,6 +16,14 @@ interface CounterOfferModalProps {
   };
 }
 
+const calculateMonthlyPayment = (principal: number, downPayment: number, annualRate: number, years: number): number => {
+    const loanAmount = principal - downPayment;
+    const monthlyRate = annualRate / 12 / 100;
+    // Interest-only payment: only pay interest each month
+    const monthlyPayment = loanAmount * monthlyRate;
+    return Math.round(monthlyPayment * 100) / 100;
+};
+
 const CounterOfferModal: React.FC<CounterOfferModalProps> = ({
   isOpen,
   onClose,
@@ -26,26 +34,41 @@ const CounterOfferModal: React.FC<CounterOfferModalProps> = ({
     downPayment: originalOffer.downPayment,
     loanTerm: originalOffer.loanTerm,
     message: '',
+    interestRate: 6.5, // Default interest rate
   });
+
+  const [monthlyPayment, setMonthlyPayment] = useState<number>(0);
+
+  useEffect(() => {
+    const payment = calculateMonthlyPayment(
+      counterOfferDetails.offerPrice,
+      counterOfferDetails.downPayment,
+      counterOfferDetails.interestRate,
+      counterOfferDetails.loanTerm
+    );
+    setMonthlyPayment(payment);
+  }, [counterOfferDetails]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/crud/offerings/counter', {
+      const response = await fetch('/api/crud/offerings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           original_offering_id: originalOffer.offering_id,
-          property_id: originalOffer.property_id,
+          propertyId: originalOffer.property_id,
           user_email: originalOffer.user_email,
+          monthlyPayment: monthlyPayment,
           ...counterOfferDetails,
           type: 'counteroffer',
         }),
       });
 
       if (!response.ok) {
+        console.log('Response status:', response);
         throw new Error('Failed to submit counter offer');
       }
 
@@ -139,6 +162,33 @@ const CounterOfferModal: React.FC<CounterOfferModalProps> = ({
                 <option value={15}>15 years</option>
                 <option value={30}>30 years</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Interest Rate (%)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                value={counterOfferDetails.interestRate}
+                onChange={(e) => setCounterOfferDetails({
+                  ...counterOfferDetails,
+                  interestRate: Number(e.target.value),
+                })}
+                className="block w-full rounded-md border border-gray-300 py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500"
+                required
+              />
+            </div>
+
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="text-sm font-medium text-blue-800 mb-2">Monthly Payment Estimate:</h3>
+              <p className="text-2xl font-semibold text-blue-900">
+                ${monthlyPayment.toLocaleString()}
+              </p>
+              <p className="text-xs text-blue-600 mt-1">
+                Based on {counterOfferDetails.interestRate}% APR for {counterOfferDetails.loanTerm} years
+              </p>
             </div>
 
             <div>

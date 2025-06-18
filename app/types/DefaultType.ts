@@ -89,3 +89,59 @@ export type Properties = {
     wishlisted: boolean
 
 }
+
+export type Offering = {
+  offering_id: string;
+  property_id: string;
+  user_email: string;
+  phone: string;
+  status: 'pending' | 'approved' | 'rejected';
+  offerPrice: number;
+  downPayment: number;
+  loanTerm: number;
+  monthlyPayment: number;
+  interestRate: number;
+  preApproved: boolean;
+  message?: string;
+  created_at: string;
+  updatedAt: string;
+  type: 'offer' | 'counteroffer';
+}
+
+export type Notification = {
+  notification_id: string;
+  email: string;
+  title: string;
+  message: string;
+  type: 'offer' | 'counteroffer' | 'info' | 'success' | 'warning' | 'error';
+  isRead: boolean;
+  created_at: string;
+  related_id?: string; // Could be offering_id or property_id
+  link?: string; // Optional URL to navigate to
+  metadata?: {
+    [key: string]: any;
+  };
+}
+
+// Enum for notification types
+export enum NotificationType {
+  OFFER = 'offer',
+  COUNTER_OFFER = 'counteroffer',
+  INFO = 'info',
+  SUCCESS = 'success',
+  WARNING = 'warning',
+  ERROR = 'error'
+}
+
+// Enum for offering status
+export enum OfferingStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected'
+}
+
+// Enum for offering types
+export enum OfferingType {
+  OFFER = 'offer',
+  COUNTER_OFFER = 'counteroffer'
+}

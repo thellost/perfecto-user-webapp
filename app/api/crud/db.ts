@@ -408,3 +408,59 @@ export async function getOfferingsByUserEmail(user_email: string) {
         throw error;
     }
 }
+export async function getOfferingById(offering_id: string, property_id: string) {
+    try {
+        const command = new GetCommand({
+            TableName: "offerings",
+            Key: {
+                offering_id,
+                property_id,
+            },
+        });
+
+        const response = await client.send(command);
+        return response.Item;
+    } catch (error) {
+        console.error("Error fetching offering by id:", error);
+        throw error;
+    }
+}
+
+export async function addNotification(notification: { email: string; [key: string]: any }) {
+    try {
+        const command = new PutCommand({
+            TableName: "notification",
+            Item: {
+                ...notification,
+                notification_id: crypto.randomUUID(),
+                created_at: new Date().toISOString(),
+            },
+        });
+
+        const response = await client.send(command);
+        console.log("Notification added successfully.");
+        return response;
+    } catch (error) {
+        console.error("Error adding notification:", error);
+        throw error;
+    }
+}
+
+export async function getNotificationsByEmail(email: string) {
+    try {
+
+        const command = new QueryCommand({
+            TableName: "notification",
+            KeyConditionExpression: "email = :email",
+            ExpressionAttributeValues: {
+                ":email": email,
+            },
+        });
+
+        const response = await client.send(command);
+        return response.Items;
+    } catch (error) {
+        console.error("Error fetching notifications by email:", error);
+        throw error;
+    }
+}

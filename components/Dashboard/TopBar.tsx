@@ -1,5 +1,6 @@
 import React from "react";
 import { FiCalendar } from "react-icons/fi";
+import NotificationBell from "../Notification/Notification";
 
 export const TopBar = ( {name}:{name:string} ) => {
   return (
@@ -11,11 +12,13 @@ export const TopBar = ( {name}:{name:string} ) => {
            {Date()}
           </span>
         </div>
-
+        <div className="flex text-sm items-center gap-2" >
+          <NotificationBell></NotificationBell>
         <button className="flex text-sm items-center gap-2 bg-stone-100 transition-colors hover:bg-violet-100 hover:text-violet-700 px-3 py-1.5 rounded">
+
           <FiCalendar />
           <span>All time</span>
-        </button>
+        </button></div>
       </div>
     </div>
   );
