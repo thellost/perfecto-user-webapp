@@ -22,7 +22,7 @@ async function createNotification(data: {
 }, headers: Headers) {
   const forwardedCookies = headers.get('cookie');
   
-  await fetch(new URL('/api/crud/notifications', process.env.NEXTAUTH_URL as string).href, {
+  await fetch(new URL('/api/crud/notifications', process.env.NEXT_PUBLIC_REACT_APP_API_URL as string).href, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ export async function POST(req : NextRequest) {
 
         // Create notification for new offer
         if (data.type === 'counteroffer') {
-            await createNotification({
+            createNotification({
                 email: data.user_email,
                 title: 'New Counter Offer Received',
                 message: `${token.email} has sent you a counter offer of $${data.offerPrice.toLocaleString()} for property ${data.propertyId}`,
@@ -94,7 +94,7 @@ export async function POST(req : NextRequest) {
             }, req.headers);
         } else {
             // Notify property owner about new offer
-            await createNotification({
+            createNotification({
                 email: userData.email, // property owner's email
                 title: 'New Offer Received',
                 message: `${token.email} has sent you an offer of $${data.offerPrice.toLocaleString()} for property ${data.propertyId}`,
@@ -230,7 +230,7 @@ export async function DELETE(req : NextRequest) {
         });
 
         // Create notification for rejected offer
-        await createNotification({
+        createNotification({
             email: offerings.user_email,
             title: offerings.type === 'counteroffer' ? 'Counter Offer Declined' : 'Offer Declined',
             message: `${token.email} has declined your ${offerings.type === 'counteroffer' ? 'counter offer' : 'offer'} of $${offerings.offerPrice.toLocaleString()} for property ${propertyId}`,
@@ -307,7 +307,7 @@ export async function PUT(req: NextRequest) {
         });
 
         // Create notification for accepted offer
-        await createNotification({
+        createNotification({
             email: offerings.user_email,
             title: offerings.type === 'counteroffer' ? 'Counter Offer Accepted' : 'Offer Accepted',
             message: `${token.email} has accepted your ${offerings.type === 'counteroffer' ? 'counter offer' : 'offer'} of $${offerings.offerPrice.toLocaleString()} for property ${property_id}`,
