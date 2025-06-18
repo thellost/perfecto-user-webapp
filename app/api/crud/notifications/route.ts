@@ -5,7 +5,7 @@ import { addNotification, getNotificationsByEmail } from "../db";
 export async function GET(req: NextRequest) {
     try {
         // Verify user authentication
-        const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+        const token = await getToken({ req, secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET });
         if (!token) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         // Verify user authentication
-        const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+        const token = await getToken({ req, secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET });
         if (!token) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }

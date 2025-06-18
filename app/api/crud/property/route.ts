@@ -19,7 +19,7 @@ export async function GET(req : NextRequest) {
         } 
         else if (email != null || email != undefined) {
             // Validate user email
-            const token = await getToken({ req });
+            const token = await getToken({ req , secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET });
             if (!token || token.email !== email) {
                 throw new Error("Unauthorized access");
             }
